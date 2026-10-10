@@ -5,7 +5,7 @@ Bun workspace monorepo for the Gopur PWA (`app/`) and Cloudflare Workers API (`a
 ## Stage 3 (auth + writes)
 
 - Workspaces: `app`, `api`
-- `api`: Hono on Workers, ArkType, D1 (APAC `gopur`) + KV `GOPUR_AUTH`
+- `api`: Hono on Workers, ArkType, D1 (HKG `gopur`) + KV `GOPUR_AUTH`
 - Auth: email OTP (KV) → JWT; Brevo when `BREVO_API_KEY` is set, otherwise stub
 - Writes: create/update event, like/save/share, follow, profile patch
 - `app`: healthz + feed + like/save via `hc`
