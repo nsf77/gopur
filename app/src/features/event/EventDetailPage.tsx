@@ -60,11 +60,10 @@ export default function EventDetailPage() {
               <h1 class="m-0 mb-2 text-[28px] font-extrabold leading-tight tracking-tight">{title}</h1>
               <EventActionRow event={ev} loginNext={`/event/${ev.id}`} />
               <Show
-                when={pipe(
-                  currentUser(),
-                  O.map((u) => (isEventHost(u.id, ev) || u.role === "admin") && !ev.imported),
-                  O.getWithDefault(false),
-                )}
+                when={(() => {
+                  const u = O.toNullable(currentUser());
+                  return Boolean(u && !ev.imported && (isEventHost(u.id, ev) || u.role === "admin"));
+                })()}
               >
                 <div class="mt-3">
                   <Button href={`/event/${encodeURIComponent(ev.id)}/edit`} variant="secondary">
