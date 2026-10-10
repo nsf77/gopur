@@ -47,6 +47,8 @@ import {
 import { searchIDs, type SearchQuery } from "./search";
 import { matchQuery } from "./searchtext";
 import { imports } from "./importer/http";
+import { meLists } from "./me-lists";
+import { notes } from "./notifications";
 import type { Bindings } from "./types";
 import { writes } from "./writes";
 
@@ -466,7 +468,7 @@ WHERE l.event_id = ? AND u.banned_at IS NULL
     return c.json(found);
   });
 
-const api = reads.route("/", writes).route("/", imports);
+const api = reads.route("/", writes).route("/", imports).route("/", meLists).route("/", notes);
 export type AppType = typeof api;
 /** Serve under /api on go.pur.run and at root on *.workers.dev */
 const app = new Hono<{ Bindings: Bindings }>().route("/api", api).route("/", api);
@@ -476,14 +478,20 @@ export {
   Event,
   EventList,
   EventPage,
+  EventWrite,
   FollowState,
   LikeState,
   LikersPage,
+  MyEvent,
+  MyEventList,
+  Notification,
+  NotificationList,
   Organizer,
   OrganizerDirectory,
   PatchMe,
   PublicProfile,
   SaveState,
   ShareState,
+  UnreadCount,
   User,
 } from "./schemas";

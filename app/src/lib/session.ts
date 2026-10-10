@@ -104,3 +104,8 @@ export function initSession(now = Date.now()): void {
   }
   writeSignal(parsed);
 }
+
+export function canCreateEvents(user: User | null | undefined): boolean {
+  if (!user) return false;
+  return user.is_verified || user.role === "admin";
+}

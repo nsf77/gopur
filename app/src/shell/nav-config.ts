@@ -1,3 +1,4 @@
+import IconBell from "~icons/lucide/bell";
 import IconCalendarDays from "~icons/lucide/calendar-days";
 import IconCircleUserRound from "~icons/lucide/circle-user-round";
 import IconCompass from "~icons/lucide/compass";
@@ -27,6 +28,7 @@ export function tabBarItems(): NavItem[] {
 export function sidebarItems(): NavItem[] {
   return [
     ...tabBarItems().filter((item) => item.href !== "/chat"),
+    { href: "/notifications", label: t("notifications.title"), icon: IconBell },
     { href: "/settings", label: t("settings.title"), icon: IconSettings },
   ];
 }

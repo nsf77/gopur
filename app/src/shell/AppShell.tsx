@@ -15,6 +15,9 @@ function titleFor(pathname: string): string {
   if (pathname.startsWith("/login")) return t("auth.welcome");
   if (pathname.startsWith("/chat")) return t("tabs.chat");
   if (pathname.startsWith("/my-events")) return t("tabs.myEvents");
+  if (pathname.startsWith("/notifications")) return t("notifications.title");
+  if (pathname === "/event/new") return t("editor.new");
+  if (pathname.endsWith("/edit") && pathname.startsWith("/event/")) return t("editor.edit");
   if (pathname.startsWith("/event/")) return t("tabs.home");
   return "Gopur";
 }
