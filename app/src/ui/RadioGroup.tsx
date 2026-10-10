@@ -1,4 +1,4 @@
-import { RadioGroup as ArkRadio } from "@ark-ui/solid/radio-group";
+import { RadioGroup as KobalteRadio } from "@kobalte/core/radio-group";
 import { For } from "solid-js";
 
 export function RadioGroup<T extends string>(props: {
@@ -9,42 +9,29 @@ export function RadioGroup<T extends string>(props: {
   "aria-label"?: string;
 }) {
   return (
-    <ArkRadio.Root
+    <KobalteRadio
       name={props.name}
       value={props.value}
-      onValueChange={(d) => {
-        if (d.value) props.onChange(d.value as T);
+      onChange={(value) => {
+        if (value) props.onChange(value as T);
       }}
-      render={(root) => (
-        <div {...root({})}>
-          <ArkRadio.Label render={(label) => <span {...label({ class: "sr-only" })}>{props["aria-label"]}</span>} />
-          <div class="grid gap-1">
-            <For each={props.options}>
-              {(opt) => (
-                <ArkRadio.Item
-                  value={opt.value}
-                  render={(item) => (
-                    <label {...item({ class: "flex min-h-11 items-center gap-3 rounded-xl px-2 hover:bg-surface-elevated" })}>
-                      <ArkRadio.ItemControl
-                        render={(control) => (
-                          <div
-                            {...control({
-                              class:
-                                "size-4 rounded-full border border-divider data-[state=checked]:border-accent data-[state=checked]:bg-accent",
-                            })}
-                          />
-                        )}
-                      />
-                      <ArkRadio.ItemText render={(text) => <span {...text({ class: "text-sm font-medium" })}>{opt.label}</span>} />
-                      <ArkRadio.ItemHiddenInput />
-                    </label>
-                  )}
-                />
-              )}
-            </For>
-          </div>
-        </div>
-      )}
-    />
+      aria-label={props["aria-label"]}
+    >
+      <KobalteRadio.Label class="sr-only">{props["aria-label"]}</KobalteRadio.Label>
+      <div class="grid gap-1">
+        <For each={props.options} keyed={(opt) => opt.value}>
+          {(opt) => (
+            <KobalteRadio.Item
+              value={opt().value}
+              class="flex min-h-11 items-center gap-3 rounded-xl px-2 hover:bg-surface-elevated"
+            >
+              <KobalteRadio.ItemInput />
+              <KobalteRadio.ItemControl class="size-4 rounded-full border border-divider ui-checked:border-accent ui-checked:bg-accent" />
+              <KobalteRadio.ItemLabel class="text-sm font-medium">{opt().label}</KobalteRadio.ItemLabel>
+            </KobalteRadio.Item>
+          )}
+        </For>
+      </div>
+    </KobalteRadio>
   );
 }
