@@ -465,8 +465,10 @@ WHERE l.event_id = ? AND u.banned_at IS NULL
     return c.json(found);
   });
 
-const app = reads.route("/", writes);
-export type AppType = typeof app;
+const api = reads.route("/", writes);
+export type AppType = typeof api;
+/** Serve under /api on go.pur.run and at root on *.workers.dev */
+const app = new Hono<{ Bindings: Bindings }>().route("/api", api).route("/", api);
 export default app;
 export {
   AuthResponse,
