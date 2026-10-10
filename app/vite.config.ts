@@ -15,8 +15,8 @@ export default defineConfig({
   ],
   resolve: {
     alias: [
-      { find: "solid-js/web", replacement: resolve(root, "node_modules/@solidjs/web") },
-      { find: "solid-js-runtime", replacement: resolve(root, "node_modules/solid-js") },
+      { find: "solid-js/web", replacement: resolve(root, "node_modules/@solidjs/web/dist/web.js") },
+      { find: "solid-js-runtime", replacement: resolve(root, "node_modules/solid-js/dist/solid.js") },
       { find: /^solid-js$/, replacement: resolve(root, "src/shims/solid-js.ts") },
     ],
     dedupe: ["solid-js", "@solidjs/web"],
