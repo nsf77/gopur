@@ -2,16 +2,19 @@
 
 Bun workspace monorepo for the Gopur PWA (`app/`) and Cloudflare Workers API (`api/`).
 
-## Stage 4 (PWA screens)
+## Surfaces
 
 - Workspaces: `app`, `api`
 - `api`: Hono on Workers, ArkType, D1 (HKG `gopur`) + KV `GOPUR_AUTH`
 - `app`: Solid 2 PWA — feed, explore, event detail, email OTP, profile/settings, like/save via Hono RPC + TanStack Query
 - UI: `@ark-ui/solid`, Tailwind v4, liquid-glass with Reduce Transparency, accent `#304385`
+- Lists: `GET /me/events`, `/me/saved`, `/me/likes`, `/users/:id/events`
+- Notifications: D1 inbox + `GET /notifications`, unread-count, mark-read
+- Host editor: `POST|PATCH /events` via `/event/new` and `/event/:id/edit`
 
 Importer: Wrangler cron `0 16 * * *` (00:00 HKT). Manual `POST /import/run` with `X-Import-Token`.
 
-Not in this stage: chat/WS, full host editor.
+Not in this stage: chat/WS Durable Objects, production secrets rotation.
 
 ## Setup
 
@@ -44,7 +47,7 @@ bun run --filter app build
 
 ## Cloudflare Workers (Git deploy)
 
-Workers already created: `gopur-api`, `gopur-app` (account `f13e891dc4bb32f8c1450b76344ad1ca`).
+Workers already created: `gopur-api`, `gopur-app` (account `[REDACTED]`).
 
 | Worker | URL |
 |--------|-----|
@@ -70,4 +73,3 @@ Workers already created: `gopur-api`, `gopur-app` (account `f13e891dc4bb32f8c145
 - Build env: `VITE_API_URL=https://go.pur.run/api`
 
 D1 `gopur` (HKG) and KV `GOPUR_AUTH` are already bound in `api/wrangler.toml`. Set Worker secrets: `JWT_SECRET`, `IMPORT_TOKEN`, optional `BREVO_API_KEY`, `EMAIL_FROM`, `ADMIN_EMAILS`.
-

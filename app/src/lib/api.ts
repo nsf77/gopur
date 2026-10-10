@@ -8,15 +8,20 @@ import type {
   FollowState,
   LikeState,
   LikersPage,
+  MyEventList,
+  Notification,
+  NotificationList,
   Organizer,
   OrganizerDirectory,
   PatchMe,
   PublicProfile,
   SaveState,
   ShareState,
+  UnreadCount,
   User,
 } from "api";
 import { A, O, pipe } from "./belt";
+import type { EventWriteBody } from "./event-draft";
 import { authToken } from "./session";
 
 export class ApiError extends Error {
@@ -142,6 +147,50 @@ export async function followUser(id: string): Promise<FollowState> {
 
 export async function unfollowUser(id: string): Promise<FollowState> {
   return readJson(await api().users[":id"].follow.$delete({ param: { id } }));
+}
+
+export async function fetchMySignups(when: "upcoming" | "past"): Promise<MyEventList> {
+  return readJson(await api().me.events.$get({ query: { when } }));
+}
+
+export async function fetchSavedEvents(): Promise<EventList> {
+  return readJson(await api().me.saved.$get());
+}
+
+export async function fetchLikedEvents(): Promise<EventList> {
+  return readJson(await api().me.likes.$get());
+}
+
+export async function fetchHostedEvents(userId: string): Promise<EventList> {
+  return readJson(await api().users[":id"].events.$get({ param: { id: userId } }));
+}
+
+export async function createEvent(body: EventWriteBody): Promise<Event> {
+  return readJson(await api().events.$post({ json: body }));
+}
+
+export async function updateEvent(id: string, body: EventWriteBody): Promise<Event> {
+  return readJson(await api().events[":id"].$patch({ param: { id }, json: body }));
+}
+
+export async function fetchNotifications(cursor?: string): Promise<NotificationList> {
+  return readJson(
+    await api().notifications.$get({
+      query: cursor ? { cursor, limit: "30" } : { limit: "30" },
+    }),
+  );
+}
+
+export async function fetchUnreadCount(): Promise<UnreadCount> {
+  return readJson(await api().notifications["unread-count"].$get());
+}
+
+export async function markNotificationRead(id: string): Promise<Notification> {
+  return readJson(await api().notifications[":id"].read.$post({ param: { id } }));
+}
+
+export async function markAllNotificationsRead(): Promise<{ unread_count: number }> {
+  return readJson(await api().notifications["read-all"].$post());
 }
 
 export function feedTitles(events: Event[]): readonly string[] {

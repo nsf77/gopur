@@ -20,12 +20,17 @@ const ProfileEditPage = lazy(() => import("./features/profile/ProfileEditPage"))
 const SettingsPage = lazy(() => import("./features/settings/SettingsPage"));
 const UserProfilePage = lazy(() => import("./features/user/UserProfilePage"));
 const OrganizerPage = lazy(() => import("./features/organizer/OrganizerPage"));
+const MyEventsPage = lazy(() => import("./pages/MyEventsPage"));
+const NewEventPage = lazy(() => import("./pages/NewEventPage"));
+const EditEventPage = lazy(() => import("./pages/EditEventPage"));
+const NotificationsPage = lazy(() => import("./pages/NotificationsPage"));
 
 const Router = createRouter({
   routes: defineRoutes([
     { path: "/", component: FeedPage },
     { path: "/explore", component: ExplorePage },
-    { path: "/event/new", component: () => <StubPage message={t("stub.editor")} /> },
+    { path: "/event/new", component: NewEventPage },
+    { path: "/event/:id/edit", component: EditEventPage },
     { path: "/event/:id/likers", component: EventLikersPage },
     { path: "/event/:id", component: EventDetailPage },
     { path: "/login", component: LoginPage },
@@ -36,8 +41,8 @@ const Router = createRouter({
     { path: "/user/:id", component: UserProfilePage },
     { path: "/organizer/:key", component: OrganizerPage },
     { path: "/chat", component: () => <StubPage message={t("stub.chat")} /> },
-    { path: "/my-events", component: () => <StubPage message={t("stub.myEvents")} /> },
-    { path: "/notifications", component: () => <StubPage message={t("stub.notifications")} /> },
+    { path: "/my-events", component: MyEventsPage },
+    { path: "/notifications", component: NotificationsPage },
   ]),
 });
 

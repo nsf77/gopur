@@ -1,11 +1,14 @@
 import { For, Show } from "solid-js";
 import { useParams } from "@solidjs/router";
+import { isEventHost } from "../../lib/event-draft";
 import { eventImageUrls, eventText, formatEventWhen, formatHkdDollars } from "../../lib/event-text";
 import { locale, t } from "../../lib/i18n";
 import { G, O, pipe } from "../../lib/belt";
 import { isNotFound, useEvent } from "../../lib/queries";
+import { currentUser } from "../../lib/session";
 import { EventActionRow } from "../viewer/EventActionRow";
 import { Avatar } from "../../ui/Avatar";
+import { Button } from "../../ui/Button";
 import { StatusMessage } from "../../ui/StatusMessage";
 import IconExternalLink from "~icons/lucide/external-link";
 
@@ -56,6 +59,18 @@ export default function EventDetailPage() {
               </div>
               <h1 class="m-0 mb-2 text-[28px] font-extrabold leading-tight tracking-tight">{title}</h1>
               <EventActionRow event={ev} loginNext={`/event/${ev.id}`} />
+              <Show
+                when={(() => {
+                  const u = O.toNullable(currentUser());
+                  return Boolean(u && !ev.imported && (isEventHost(u.id, ev) || u.role === "admin"));
+                })()}
+              >
+                <div class="mt-3">
+                  <Button href={`/event/${encodeURIComponent(ev.id)}/edit`} variant="secondary">
+                    {t("editor.edit")}
+                  </Button>
+                </div>
+              </Show>
               <p class="mt-2 text-sm text-text-muted">{price}</p>
               <p class="mt-1 text-sm text-text-muted">
                 {ev.date_tbc ? t("event.dateTbc") : formatEventWhen(ev.start_at, loc())}

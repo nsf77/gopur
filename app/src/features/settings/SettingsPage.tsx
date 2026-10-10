@@ -1,5 +1,6 @@
 import { useNavigate } from "@solidjs/router";
 import { Show, createSignal } from "solid-js";
+import IconBell from "~icons/lucide/bell";
 import IconPencil from "~icons/lucide/pencil";
 import { t, locale, setLocale, type AppLocale } from "../../lib/i18n";
 import { isSignedIn, signOut } from "../../lib/session";
@@ -68,6 +69,10 @@ export default function SettingsPage() {
           <a class={ROW} href="/profile/edit">
             <IconPencil class="size-5" aria-hidden="true" />
             {t("settings.editProfile")}
+          </a>
+          <a class={ROW} href="/notifications">
+            <IconBell class="size-5" aria-hidden="true" />
+            {t("notifications.title")}
           </a>
           <Button variant="secondary" class="min-h-11" onClick={() => setSignOutOpen(true)}>
             {t("settings.signOut")}
