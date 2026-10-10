@@ -7,7 +7,7 @@ Bun workspace monorepo for the Gopur PWA (`app/`) and Cloudflare Workers API (`a
 - Workspaces: `app`, `api`
 - `api`: Hono on Workers, ArkType, D1 (HKG `gopur`) + KV `GOPUR_AUTH` + Durable Object `CHAT_HUB`
 - `app`: Solid 2 PWA — feed, explore, event detail, email OTP, profile/settings, like/save, `/chat` via Hono RPC + TanStack Query. Forms use TanStack Form `onChange`/`onSubmit` functions (no ArkType/Zod/Valibot in the PWA).
-- UI: `@kobalte/core` 2 alpha, Tailwind v4, liquid-glass with Reduce Transparency, accent `#304385`
+- UI: `@kobalte/core` 2 alpha (behavior) + `class-variance-authority` (class variants), Tailwind v4, liquid-glass with Reduce Transparency, accent `#304385`
 - Lists: `GET /me/events`, `/me/saved`, `/me/likes`, `/users/:id/events`
 - Notifications: D1 inbox + `GET /notifications`, unread-count, mark-read
 - Host editor: `POST|PATCH /events` via `/event/new` and `/event/:id/edit`

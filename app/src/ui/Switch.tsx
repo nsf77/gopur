@@ -1,4 +1,5 @@
 import { Switch } from "@kobalte/core/switch";
+import { switchControl, switchLabel, switchRoot, switchThumb } from "./styles";
 
 export function SwitchField(props: {
   checked: boolean;
@@ -6,12 +7,12 @@ export function SwitchField(props: {
   onChange: (checked: boolean) => void;
 }) {
   return (
-    <Switch checked={props.checked} onChange={props.onChange} class="flex min-h-11 items-center gap-3">
+    <Switch checked={props.checked} onChange={props.onChange} class={switchRoot()}>
       <Switch.Input />
-      <Switch.Control class="relative inline-flex h-7 w-11 items-center rounded-pill bg-surface-pressed ui-checked:bg-accent">
-        <Switch.Thumb class="size-5 translate-x-1 rounded-full bg-white transition-transform ui-checked:translate-x-5" />
+      <Switch.Control class={switchControl()}>
+        <Switch.Thumb class={switchThumb()} />
       </Switch.Control>
-      <Switch.Label class="text-sm font-medium">{props.label}</Switch.Label>
+      <Switch.Label class={switchLabel()}>{props.label}</Switch.Label>
     </Switch>
   );
 }

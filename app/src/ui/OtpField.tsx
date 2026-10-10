@@ -1,5 +1,6 @@
 import { OTPField, useOTPFieldContext } from "@kobalte/core/otp-field";
 import { For, createUniqueId } from "solid-js";
+import { otpInput, otpLabel, otpRoot, otpSlot, otpSlots } from "./styles";
 
 export const OTP_LENGTH = 6;
 
@@ -8,20 +9,12 @@ const SLOT_INDEXES = [0, 1, 2, 3, 4, 5] as const;
 function DigitSlots() {
   const otp = useOTPFieldContext();
   return (
-    <div class="flex gap-2" aria-hidden="true">
+    <div class={otpSlots()} aria-hidden="true">
       <For each={SLOT_INDEXES} keyed={(index) => index}>
         {(index) => {
           const active = () => otp.activeSlots().includes(index());
           const char = () => otp.value()[index()] ?? "";
-          return (
-            <div
-              class={`flex size-11 items-center justify-center rounded-md border bg-surface text-lg font-semibold tabular-nums ${
-                active() ? "border-accent" : "border-divider"
-              }`}
-            >
-              {char()}
-            </div>
-          );
+          return <div class={otpSlot({ active: active() })}>{char()}</div>;
         }}
       </For>
     </div>
@@ -39,8 +32,8 @@ export function OtpField(props: {
 }) {
   const labelId = createUniqueId();
   return (
-    <div class="grid gap-1">
-      <span id={labelId} class="text-sm font-medium">
+    <div class={otpRoot()}>
+      <span id={labelId} class={otpLabel()}>
         {props.label}
       </span>
       <OTPField
@@ -54,7 +47,7 @@ export function OtpField(props: {
         onComplete={props.onComplete}
         aria-labelledby={labelId}
       >
-        <OTPField.Input class="z-10" />
+        <OTPField.Input class={otpInput()} />
         <DigitSlots />
       </OTPField>
     </div>

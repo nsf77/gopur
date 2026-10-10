@@ -1,5 +1,6 @@
 import { RadioGroup as KobalteRadio } from "@kobalte/core/radio-group";
 import { For } from "solid-js";
+import { radioControl, radioItem, radioItemLabel, radioLabel, radioOptions } from "./styles";
 
 export function RadioGroup<T extends string>(props: {
   name: string;
@@ -17,17 +18,14 @@ export function RadioGroup<T extends string>(props: {
       }}
       aria-label={props["aria-label"]}
     >
-      <KobalteRadio.Label class="sr-only">{props["aria-label"]}</KobalteRadio.Label>
-      <div class="grid gap-1">
+      <KobalteRadio.Label class={radioLabel()}>{props["aria-label"]}</KobalteRadio.Label>
+      <div class={radioOptions()}>
         <For each={props.options} keyed={(opt) => opt.value}>
           {(opt) => (
-            <KobalteRadio.Item
-              value={opt().value}
-              class="flex min-h-11 items-center gap-3 rounded-xl px-2 hover:bg-surface-elevated"
-            >
+            <KobalteRadio.Item value={opt().value} class={radioItem()}>
               <KobalteRadio.ItemInput />
-              <KobalteRadio.ItemControl class="size-4 rounded-full border border-divider ui-checked:border-accent ui-checked:bg-accent" />
-              <KobalteRadio.ItemLabel class="text-sm font-medium">{opt().label}</KobalteRadio.ItemLabel>
+              <KobalteRadio.ItemControl class={radioControl()} />
+              <KobalteRadio.ItemLabel class={radioItemLabel()}>{opt().label}</KobalteRadio.ItemLabel>
             </KobalteRadio.Item>
           )}
         </For>

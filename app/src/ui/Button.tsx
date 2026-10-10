@@ -1,15 +1,7 @@
 import type { ParentProps } from "solid-js";
+import { button, type ButtonVariants } from "./styles";
 
-export type ButtonVariant = "primary" | "secondary" | "ghost";
-
-const BASE =
-  "inline-flex items-center justify-center gap-2 min-h-11 font-bold rounded-pill px-4 text-sm transition-transform duration-150 ease-standard active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-45";
-
-const VARIANT: Record<ButtonVariant, string> = {
-  primary: "bg-accent text-accent-contrast",
-  secondary: "border border-divider bg-transparent text-text",
-  ghost: "bg-transparent text-text",
-};
+export type ButtonVariant = NonNullable<ButtonVariants["variant"]>;
 
 export function Button(
   props: ParentProps<{
@@ -21,7 +13,7 @@ export function Button(
     href?: string;
   }>,
 ) {
-  const cls = () => `${BASE} ${VARIANT[props.variant ?? "primary"]}${props.class ? ` ${props.class}` : ""}`;
+  const cls = () => button({ variant: props.variant, class: props.class });
   if (props.href) {
     return (
       <a href={props.href} class={cls()}>

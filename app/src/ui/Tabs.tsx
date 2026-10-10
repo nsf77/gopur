@@ -1,6 +1,7 @@
 import { Tabs as KobalteTabs } from "@kobalte/core/tabs";
 import type { JSX } from "@solidjs/web";
 import { For } from "solid-js";
+import { tabsContent, tabsList, tabsTrigger } from "./styles";
 
 export function Tabs(props: {
   value: string;
@@ -10,14 +11,10 @@ export function Tabs(props: {
 }) {
   return (
     <KobalteTabs value={props.value} onChange={props.onChange}>
-      <KobalteTabs.List class="flex gap-1 px-4" aria-label={props["aria-label"]}>
+      <KobalteTabs.List class={tabsList()} aria-label={props["aria-label"]}>
         <For each={props.items} keyed={(item) => item.value}>
           {(item) => (
-            <KobalteTabs.Trigger
-              value={item().value}
-              type="button"
-              class="min-h-11 rounded-pill px-3 text-sm font-semibold text-text-muted ui-selected:bg-accent-subtle ui-selected:text-accent"
-            >
+            <KobalteTabs.Trigger value={item().value} type="button" class={tabsTrigger()}>
               {item().label}
             </KobalteTabs.Trigger>
           )}
@@ -25,7 +22,7 @@ export function Tabs(props: {
       </KobalteTabs.List>
       <For each={props.items} keyed={(item) => item.value}>
         {(item) => (
-          <KobalteTabs.Content value={item().value} class="pt-2">
+          <KobalteTabs.Content value={item().value} class={tabsContent()}>
             {item().content}
           </KobalteTabs.Content>
         )}

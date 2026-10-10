@@ -1,16 +1,10 @@
 import { Show } from "solid-js";
 import { organizerColorFromName, organizerInitial } from "../lib/avatar";
+import { avatar } from "./styles";
 
-const SIZE = {
-  sm: "size-8 text-xs",
-  md: "size-10 text-sm",
-  lg: "size-14 text-base",
-} as const;
-
-export function Avatar(props: { name: string; src?: string | null; size?: keyof typeof SIZE; class?: string }) {
-  const size = () => props.size ?? "md";
+export function Avatar(props: { name: string; src?: string | null; size?: "sm" | "md" | "lg"; class?: string }) {
   return (
-    <span class={`inline-flex shrink-0 overflow-hidden rounded-full ${SIZE[size()]}${props.class ? ` ${props.class}` : ""}`}>
+    <span class={avatar({ size: props.size, class: props.class })}>
       <Show
         when={props.src}
         fallback={
