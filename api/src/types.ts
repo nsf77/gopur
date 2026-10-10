@@ -12,4 +12,7 @@ export type Bindings = {
   EMAIL_FROM_NAME?: string;
   BREVO_API_KEY?: string;
   MAIL_PROVIDER?: string;
+  IMPORT_TOKEN?: string;
+  IMPORT_RUN_TIMEOUT?: string;
+  IMPORT_SOURCE_TIMEOUT?: string;
 };
