@@ -18,3 +18,11 @@ migrations_dir = "migrations"
 [[kv_namespaces]]
 binding = "GOPUR_AUTH"
 id = "fd21b33de2704609a40e6b27a9d18325"
+
+[[durable_objects.bindings]]
+name = "CHAT_HUB"
+class_name = "ChatHub"
+
+[[migrations]]
+tag = "v4-chat-hub"
+new_classes = ["ChatHub"]

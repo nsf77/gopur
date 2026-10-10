@@ -42,7 +42,12 @@ export function isNavItemActive(pathname: string, item: Pick<NavItem, "href">): 
 export function shellMode(pathname: string): "home" | "explore" | "detail" | "primary" {
   if (pathname === "/") return "home";
   if (pathname === "/explore" || pathname.startsWith("/explore/")) return "explore";
-  if (pathname.startsWith("/event/") || pathname.startsWith("/login") || pathname.startsWith("/organizer/")) {
+  if (
+    pathname.startsWith("/event/") ||
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/organizer/") ||
+    pathname.startsWith("/chat/")
+  ) {
     return "detail";
   }
   return "primary";
@@ -52,6 +57,7 @@ export function hideTabBar(pathname: string): boolean {
   return (
     pathname.startsWith("/event/") ||
     pathname.startsWith("/login") ||
-    pathname.startsWith("/profile/edit")
+    pathname.startsWith("/profile/edit") ||
+    pathname.startsWith("/chat/")
   );
 }

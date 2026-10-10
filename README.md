@@ -5,16 +5,16 @@ Bun workspace monorepo for the Gopur PWA (`app/`) and Cloudflare Workers API (`a
 ## Surfaces
 
 - Workspaces: `app`, `api`
-- `api`: Hono on Workers, ArkType, D1 (HKG `gopur`) + KV `GOPUR_AUTH`
-- `app`: Solid 2 PWA — feed, explore, event detail, email OTP, profile/settings, like/save via Hono RPC + TanStack Query
+- `api`: Hono on Workers, ArkType, D1 (HKG `gopur`) + KV `GOPUR_AUTH` + Durable Object `CHAT_HUB`
+- `app`: Solid 2 PWA — feed, explore, event detail, email OTP, profile/settings, like/save, `/chat` via Hono RPC + TanStack Query
 - UI: `@ark-ui/solid`, Tailwind v4, liquid-glass with Reduce Transparency, accent `#304385`
 - Lists: `GET /me/events`, `/me/saved`, `/me/likes`, `/users/:id/events`
 - Notifications: D1 inbox + `GET /notifications`, unread-count, mark-read
 - Host editor: `POST|PATCH /events` via `/event/new` and `/event/:id/edit`
+- Importer: Wrangler cron `0 16 * * *` (00:00 HKT). Manual `POST /import/run` with `X-Import-Token`.
+- Chat: store-and-forward relay (device IndexedDB history, ticks, 30-day TTL) over `/ws` (and `/api/ws`)
 
-Importer: Wrangler cron `0 16 * * *` (00:00 HKT). Manual `POST /import/run` with `X-Import-Token`.
-
-Not in this stage: chat/WS Durable Objects, production secrets rotation.
+Not in this stage: production secrets rotation.
 
 ## Setup
 

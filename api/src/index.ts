@@ -50,6 +50,7 @@ import { imports } from "./importer/http";
 import { meLists } from "./me-lists";
 import { notes } from "./notifications";
 import type { Bindings } from "./types";
+import { chat } from "./chat";
 import { writes } from "./writes";
 
 export type { Bindings } from "./types";
@@ -468,11 +469,12 @@ WHERE l.event_id = ? AND u.banned_at IS NULL
     return c.json(found);
   });
 
-const api = reads.route("/", writes).route("/", imports).route("/", meLists).route("/", notes);
+const api = reads.route("/", writes).route("/", imports).route("/", meLists).route("/", notes).route("/", chat);
 export type AppType = typeof api;
 /** Serve under /api on go.pur.run and at root on *.workers.dev */
 const app = new Hono<{ Bindings: Bindings }>().route("/api", api).route("/", api);
 export default app;
+
 export {
   AuthResponse,
   Event,
