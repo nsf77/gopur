@@ -3,8 +3,10 @@ export { merge as mergeProps, onSettled as onMount } from "solid-js-runtime";
 import {
   For,
   omit,
+  createContext as createContext2,
   createEffect as createEffect2,
   createRenderEffect as createRenderEffect2,
+  useContext as useContext2,
 } from "solid-js-runtime";
 import type { Element as SolidElement } from "solid-js-runtime";
 
@@ -14,6 +16,31 @@ function isSolid2EffectFn(value: unknown): boolean {
     typeof value === "function" ||
     (typeof value === "object" && value !== null && "effect" in value)
   );
+}
+
+/**
+ * Solid 2's createContext() *is* the provider function. Solid 1 returned
+ * `{ Provider, id }`. Ark UI still does `createComponent(Context.Provider, …)`,
+ * which is `undefined` on Solid 2 and throws `e is not a function`.
+ */
+export function createContext(defaultValue?: unknown, options?: { name?: string }) {
+  const context = createContext2(defaultValue as never, options as never) as ((props: {
+    value: unknown;
+    children?: unknown;
+  }) => unknown) & { Provider?: unknown };
+  context.Provider ??= context;
+  return context;
+}
+
+/** Solid 1 returned `undefined` when no Provider was present. Solid 2 throws. */
+export function useContext<T>(context: { id: symbol; defaultValue?: T }): T | undefined {
+  try {
+    return useContext2(context as never) as T;
+  } catch (error) {
+    // ContextNotFoundError / NoOwnerError are empty-message Errors in prod.
+    if (error instanceof Error && error.message === "") return undefined;
+    throw error;
+  }
 }
 
 /**
