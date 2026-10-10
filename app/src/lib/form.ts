@@ -1,10 +1,12 @@
 import { FormApi } from "@tanstack/form-core";
 import { createMemo, createSignal, createUniqueId, onSettled } from "solid-js";
 
+type FormValidateFn<TFormData> = (args: { value: TFormData }) => unknown;
+
 export function createForm<TFormData>(opts: () => {
   defaultValues: TFormData;
   onSubmit: (args: { value: TFormData }) => void;
-  validators?: { onSubmit?: (args: { value: TFormData }) => unknown };
+  validators?: { onChange?: FormValidateFn<TFormData>; onSubmit?: FormValidateFn<TFormData> };
 }) {
   const options = opts();
   const api = new FormApi({
