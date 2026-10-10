@@ -11,6 +11,38 @@ export function present(value: string | undefined | null): boolean {
   return !v.startsWith(UNREGISTERED_ZH);
 }
 
+export function hasContent(map: LocaleMap): boolean {
+  return Object.values(map).some((v) => present(v));
+}
+
+export function marshal(map: LocaleMap): string {
+  const ordered: LocaleMap = {};
+  for (const k of Object.keys(map).sort()) {
+    const val = map[k];
+    if (val != null) ordered[k] = val;
+  }
+  return JSON.stringify(ordered).replace(/[<>&]/g, (ch) => {
+    if (ch === "<") return "\\u003c";
+    if (ch === ">") return "\\u003e";
+    return "\\u0026";
+  });
+}
+
+export function mergeWrite(existing: LocaleMap, patch: LocaleMap, convenience: string, locale: string): LocaleMap {
+  const result = { ...existing };
+  for (const [key, value] of Object.entries(patch)) {
+    if (!value) {
+      delete result[key];
+      continue;
+    }
+    result[normalizeLocale(key)] = value;
+  }
+  if (convenience) {
+    result[normalizeLocale(locale) || LOCALE_EN] = convenience;
+  }
+  return result;
+}
+
 export function unmarshal(raw: string | null | undefined): LocaleMap | null {
   if (!raw) return {};
   try {

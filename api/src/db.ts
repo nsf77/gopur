@@ -13,3 +13,8 @@ export async function one<T>(db: D1Database, sql: string, params: Bindable[] = [
   const row = await stmt.first<T>();
   return row ?? null;
 }
+
+export async function run(db: D1Database, sql: string, params: Bindable[] = []): Promise<void> {
+  const stmt = params.length > 0 ? db.prepare(sql).bind(...params) : db.prepare(sql);
+  await stmt.run();
+}

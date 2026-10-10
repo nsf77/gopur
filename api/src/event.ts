@@ -57,6 +57,65 @@ export function organizerFromUser(user: UserRow | null, hostId: string | null): 
   return out;
 }
 
+export function toUserResponse(user: UserRow) {
+  const birthdate = str(user.birthdate) || undefined;
+  let age: number | null = null;
+  let teen = false;
+  if (birthdate) {
+    try {
+      age = parseBirthdate(birthdate);
+      teen = isTeen(age);
+    } catch {
+      age = null;
+    }
+  }
+  const missing: string[] = [];
+  if (str(user.role) !== "admin" && !bool01(user.imported)) {
+    if (!str(user.birthdate).trim()) missing.push("birthdate");
+    if (!str(user.username).trim()) missing.push("username");
+  }
+  const out: {
+    id: string;
+    language: string;
+    age: number | null;
+    is_teen: boolean;
+    is_private: boolean;
+    is_verified: boolean;
+    imported: boolean;
+    needs_onboarding: boolean;
+    onboarding_missing: string[];
+    credit_score: number;
+    role: string;
+    email?: string;
+    display_name?: string;
+    username?: string;
+    phone?: string;
+    avatar_url?: string;
+    bio?: string;
+    birthdate?: string;
+  } = {
+    id: str(user.id),
+    language: str(user.language) || "zh-Hant",
+    age,
+    is_teen: teen,
+    is_private: bool01(user.is_private),
+    is_verified: bool01(user.is_verified),
+    imported: bool01(user.imported),
+    needs_onboarding: missing.length > 0,
+    onboarding_missing: missing,
+    credit_score: Number(user.credit_score ?? 0),
+    role: str(user.role) || "user",
+  };
+  if (str(user.email)) out.email = str(user.email);
+  if (str(user.display_name)) out.display_name = str(user.display_name);
+  if (str(user.username)) out.username = str(user.username);
+  if (str(user.phone)) out.phone = str(user.phone);
+  if (str(user.avatar_url)) out.avatar_url = str(user.avatar_url);
+  if (str(user.bio)) out.bio = str(user.bio);
+  if (birthdate) out.birthdate = birthdate;
+  return out;
+}
+
 export function toPublicProfile(user: UserRow, followStatus: string, includeBio: boolean): PublicProfile {
   const out: PublicProfile = {
     id: str(user.id),
@@ -156,6 +215,16 @@ export function toEventResponse(event: EventRow, organizer: EventOrganizer | nul
 
 export async function getUser(db: D1Database, id: string): Promise<UserRow | null> {
   return one<UserRow>(db, "SELECT * FROM users WHERE id = ? LIMIT 1", [id]);
+}
+
+export async function followStatus(db: D1Database, viewerId: string, targetId: string): Promise<string> {
+  if (viewerId === targetId) return "self";
+  const row = await one<{ status: string }>(
+    db,
+    "SELECT status FROM follows WHERE follower_id = ? AND followee_id = ? LIMIT 1",
+    [viewerId, targetId],
+  );
+  return row?.status ?? "none";
 }
 
 export async function blockedEitherWay(db: D1Database, a: string, b: string): Promise<boolean> {

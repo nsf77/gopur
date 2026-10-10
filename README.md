@@ -2,13 +2,15 @@
 
 Bun workspace monorepo for the Gopur PWA (`app/`) and Cloudflare Workers API (`api/`).
 
-## Stage 2 (reads)
+## Stage 3 (auth + writes)
 
 - Workspaces: `app`, `api`
-- `api`: Hono on Workers, ArkType validators + `AppType` RPC, D1 schema for feed/event/search/organizer reads
-- `app`: Solid 2 + Vite + Tailwind v4 + TanStack Query, healthz + feed via `hc`
+- `api`: Hono on Workers, ArkType, D1 (HKG `gopur`) + KV `GOPUR_AUTH`
+- Auth: email OTP (KV) → JWT; Brevo when `BREVO_API_KEY` is set, otherwise stub
+- Writes: create/update event, like/save/share, follow, profile patch
+- `app`: healthz + feed + like/save via `hc`
 
-Not ported yet: auth OTP, chat/WS, importer, full PWA screens, production deploy.
+Not in this stage: chat/WS, importer, full PWA, production secrets rotation.
 
 ## Setup
 
@@ -28,6 +30,8 @@ bun run dev:api
 bun run dev:app
 ```
 
+Optional Worker vars: `JWT_SECRET`, `BREVO_API_KEY`, `ADMIN_EMAILS`, `EMAIL_FROM`.
+
 ## Check
 
 ```bash
@@ -35,8 +39,3 @@ bun run typecheck
 bun run --filter api build
 bun run --filter app build
 ```
-
-## Next stages
-
-1. Port PWA screens onto this RPC client (no Orval/OpenAPI).
-2. Auth, real D1 database id, and Workers deploy config.

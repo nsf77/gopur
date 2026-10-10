@@ -11,11 +11,13 @@ Bun workspace monorepo. Workspaces: `app` (Solid PWA) and `api` (Hono on Cloudfl
 
 - Hono on Cloudflare Workers via Wrangler.
 - Export a typed Hono app (`AppType`) so the PWA can call it with `hc` from `hono/client`.
-- Persistence is **D1** (`env.DB`). Do not reintroduce Fly.io, `bun:sqlite`, or a local SQLite driver.
-- Validate request query/params with **ArkType** (`arktype` + `@hono/arktype-validator`). Shared response types are ArkType schemas. Do not add Zod or TypeBox.
+- Validate request query/params/json with **ArkType** (`arktype` + `@hono/arktype-validator`). Shared response types are ArkType schemas. Do not add Zod or TypeBox.
 - Use `@mobily/ts-belt` (`pipe` / `O` / `R` / `A`) for optional values and expected failures. `noUncheckedIndexedAccess` is on.
+- Persistence is **D1** (`env.DB`) plus **KV** (`env.GOPUR_AUTH`) for OTP and session keys. Do not reintroduce Fly.io, `bun:sqlite`, or a local SQLite driver.
 - Read routes: `GET /healthz`, `/feed`, `/events`, `/events/:id`, `/events/:id/likers`, `/search/events`, `/organizers`, `/organizers/:key`.
-- Auth OTP, chat/WS, importer, and production deploy are later stages.
+- Auth: `POST /auth/email/start`, `POST /auth/email/verify`, `GET|PATCH /me` (JWT + KV OTP). Email via Brevo when `BREVO_API_KEY` is set; otherwise stub.
+- Writes: `POST|PATCH /events`, like/save/share, follow, `GET /users/:id`.
+- Chat/WS, importer, and production deploy are later stages.
 
 ## App (`app/`)
 

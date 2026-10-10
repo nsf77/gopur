@@ -2,6 +2,7 @@ import { arktypeValidator } from "@hono/arktype-validator";
 import { O, pipe } from "@mobily/ts-belt";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { optionalAuth, replyAuth, takeAuth, viewerId } from "./auth";
 import { decodeBase64Url, encodeBase64Url } from "./base64";
 import { all, one } from "./db";
 import {
@@ -46,16 +47,19 @@ import {
 import { searchIDs, type SearchQuery } from "./search";
 import { matchQuery } from "./searchtext";
 import type { Bindings } from "./types";
+import { writes } from "./writes";
 
 export type { Bindings } from "./types";
 
 const err = (c: { json: (body: ErrorBody, status: 400 | 404) => Response }, status: 400 | 404, message: string) =>
   c.json({ error: message }, status);
 
-const app = new Hono<{ Bindings: Bindings }>()
+const reads = new Hono<{ Bindings: Bindings }>()
   .use("*", cors())
   .get("/healthz", (c) => c.json({ ok: true as const }))
   .get("/feed", arktypeValidator("query", PageQuery, invalidQuery), async (c) => {
+    const v = takeAuth(await optionalAuth(c));
+    if (!v.ok) return replyAuth(c, v.error);
     let window: { limit: number; offset: number };
     try {
       window = pageWindow(c.req.valid("query"));
@@ -64,7 +68,7 @@ const app = new Hono<{ Bindings: Bindings }>()
     }
     const db = c.env.DB;
     const now = new Date();
-    const audience = audienceFromUser(null);
+    const audience = audienceFromUser(v.value);
     const origin = feedConfig.default_location;
     const notBefore = new Date(now.getTime() - 48 * 3600_000).toISOString().slice(0, 10);
     const rows = await all<EventRow>(
@@ -159,7 +163,7 @@ WHERE e.hidden = 0 AND e.cancelled = 0 AND e.status = 'active' AND e.removed_at 
       db,
       page.map((p) => p.id),
       locale,
-      "",
+      viewerId(v.value),
     );
     const scores = new Map(page.map((p) => [p.id, Math.round(p.score * 10) / 10]));
     const out = events.map((ev) => ({ ...ev, score: scores.get(ev.id) ?? 0 }));
@@ -172,6 +176,8 @@ WHERE e.hidden = 0 AND e.cancelled = 0 AND e.status = 'active' AND e.removed_at 
     return c.json(body);
   })
   .get("/events", arktypeValidator("query", ExploreQuery, invalidQuery), async (c) => {
+    const v = takeAuth(await optionalAuth(c));
+    if (!v.ok) return replyAuth(c, v.error);
     const q = c.req.valid("query");
     const db = c.env.DB;
     const type = q.type ?? "";
@@ -202,12 +208,12 @@ WHERE e.hidden = 0 AND e.cancelled = 0 AND e.status = 'active' AND e.removed_at 
       ],
     );
     const locale = requestLocale(new URL(c.req.url), c.req.header("accept-language") ?? null);
-    const audience = audienceFromUser(null);
+    const audience = audienceFromUser(v.value);
     const blocked = new Map<string, boolean>();
     const going = await goingCounts(db);
     const events: EventBody[] = [];
     for (const row of rows) {
-      if (!(await listVisible(db, row, audience, null, blocked))) continue;
+      if (!(await listVisible(db, row, audience, v.value, blocked))) continue;
       const org = organizerFromUser(
         row.host_user_id
           ? {
@@ -224,7 +230,7 @@ WHERE e.hidden = 0 AND e.cancelled = 0 AND e.status = 'active' AND e.removed_at 
       item.going_count = going.get(String(row.id)) ?? 0;
       events.push(item);
     }
-    await attachSocial(db, "", events);
+    await attachSocial(db, viewerId(v.value), events);
     return c.json({ events });
   })
   .get(
@@ -232,10 +238,12 @@ WHERE e.hidden = 0 AND e.cancelled = 0 AND e.status = 'active' AND e.removed_at 
     arktypeValidator("param", EventIdParam, invalidParam),
     arktypeValidator("query", LikersQuery, invalidQuery),
     async (c) => {
+      const v = takeAuth(await optionalAuth(c));
+      if (!v.ok) return replyAuth(c, v.error);
       const { id } = c.req.valid("param");
       const query = c.req.valid("query");
       const db = c.env.DB;
-      const event = await loadVisibleEvent(db, id, null);
+      const event = await loadVisibleEvent(db, id, v.value);
       if (!event) return err(c, 404, "event not found");
       let limit = 20;
       if (query.limit) {
@@ -258,7 +266,8 @@ WHERE e.hidden = 0 AND e.cancelled = 0 AND e.status = 'active' AND e.removed_at 
         }
       }
       const now = new Date().toISOString();
-      const args: Array<string | number | null> = ["", "", id, now, "", "", "", "", "", ""];
+      const vid = viewerId(v.value);
+      const args: Array<string | number | null> = [vid, vid, id, now, vid, vid, vid, vid, vid, vid];
       let cursorSQL = "";
       if (cursorT) {
         cursorSQL = " AND (l.created_at < ? OR (l.created_at = ? AND l.user_id < ?))";
@@ -310,9 +319,11 @@ WHERE l.event_id = ? AND u.banned_at IS NULL
     },
   )
   .get("/events/:id", arktypeValidator("param", EventIdParam, invalidParam), async (c) => {
+    const v = takeAuth(await optionalAuth(c));
+    if (!v.ok) return replyAuth(c, v.error);
     const { id } = c.req.valid("param");
     const db = c.env.DB;
-    const event = await loadVisibleEvent(db, id, null);
+    const event = await loadVisibleEvent(db, id, v.value);
     if (!event) return err(c, 404, "event not found");
     const locale = requestLocale(new URL(c.req.url), c.req.header("accept-language") ?? null);
     const host = event.host_user_id ? await one<UserRow>(db, "SELECT * FROM users WHERE id = ? LIMIT 1", [String(event.host_user_id)]) : null;
@@ -323,7 +334,7 @@ WHERE l.event_id = ? AND u.banned_at IS NULL
     );
     body.going_count = (await goingCounts(db)).get(String(event.id)) ?? 0;
     const page = [body];
-    await attachSocial(db, "", page);
+    await attachSocial(db, viewerId(v.value), page);
     const now = new Date().toISOString();
     const sessions = await all<{ start_at: string; end_at: string }>(
       db,
@@ -335,6 +346,8 @@ WHERE l.event_id = ? AND u.banned_at IS NULL
     return c.json(first ?? body);
   })
   .get("/search/events", arktypeValidator("query", SearchEventsQuery, invalidQuery), async (c) => {
+    const v = takeAuth(await optionalAuth(c));
+    if (!v.ok) return replyAuth(c, v.error);
     const q = c.req.valid("query");
     let window: { limit: number; offset: number };
     try {
@@ -343,7 +356,7 @@ WHERE l.event_id = ? AND u.banned_at IS NULL
       return err(c, 400, e instanceof Error ? e.message : "invalid cursor");
     }
     const db = c.env.DB;
-    const audience = audienceFromUser(null);
+    const audience = audienceFromUser(v.value);
     const origin = feedConfig.default_location;
     const qtext = (q.q ?? "").trim();
     if ([...qtext].length > 80) return err(c, 400, "search query is too long");
@@ -351,8 +364,8 @@ WHERE l.event_id = ? AND u.banned_at IS NULL
     if (qtext && !mq.ok) return c.json({ events: [] });
     const search: SearchQuery = {
       endAfter: new Date().toISOString(),
-      viewerId: "",
-      authenticated: false,
+      viewerId: viewerId(v.value),
+      authenticated: !!v.value,
       isTeen: audience.isTeen,
       viewerAge: audience.ageKnown ? audience.age : 18,
       type: q.type ?? "",
@@ -380,7 +393,7 @@ WHERE l.event_id = ? AND u.banned_at IS NULL
     const hasMore = ids.length > window.limit;
     const pageIds = hasMore ? ids.slice(0, window.limit) : ids;
     const locale = requestLocale(new URL(c.req.url), c.req.header("accept-language") ?? null);
-    const events = await hydrateEvents(db, pageIds, locale, "");
+    const events = await hydrateEvents(db, pageIds, locale, viewerId(v.value));
     const body: EventPage = { events };
     if (hasMore) {
       const next = window.offset + window.limit;
@@ -452,12 +465,15 @@ WHERE l.event_id = ? AND u.banned_at IS NULL
     return c.json(found);
   });
 
+const app = reads.route("/", writes);
 export type AppType = typeof app;
 export default app;
 export {
+  AuthResponse,
   Event,
   EventPage,
   Organizer,
   OrganizerDirectory,
   PublicProfile,
+  User,
 } from "./schemas";
