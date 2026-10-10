@@ -1,6 +1,6 @@
 import { arktypeValidator } from "@hono/arktype-validator";
 import { type } from "arktype";
-import { Hono } from "hono";
+import { type Context, Hono } from "hono";
 import { invalidQuery } from "../schemas";
 import type { Bindings } from "../types";
 import { ErrBusy, ErrUnknownSource } from "./errors";
@@ -81,11 +81,13 @@ export const imports = new Hono<{ Bindings: Bindings }>()
   .post("/import/run", arktypeValidator("query", ImportQuery, invalidQuery), (c) => startImport(c))
   .post("/internal/import", arktypeValidator("query", ImportQuery, invalidQuery), (c) => startImport(c));
 
-async function startImport(c: {
-  env: Bindings;
-  req: { valid: (k: "query") => { source?: string; wait?: string }; header: (n: string) => string | undefined };
-  json: (body: unknown, status?: 200 | 202 | 400 | 401 | 404 | 409 | 500) => Response;
-}): Promise<Response> {
+type ImportCtx = Context<
+  { Bindings: Bindings },
+  string,
+  { in: { query: { source?: string; wait?: string } }; out: { query: { source?: string; wait?: string } } }
+>;
+
+async function startImport(c: ImportCtx): Promise<Response> {
   const denied = authorize(c.env, c.req.header("X-Import-Token"));
   if (denied) return c.json({ error: denied.error }, denied.status);
   const q = c.req.valid("query");
@@ -100,6 +102,7 @@ async function startImport(c: {
     if (e === ErrUnknownSource) return c.json({ error: "unknown source" }, 400);
     return c.json({ error: "failed to start import" }, 500);
   }
+  c.executionCtx.waitUntil(started.done);
   if (q.wait !== "1") return c.json(serializeRun(started.state), 202);
   const cap = AbortSignal.timeout(WAIT_CAP_MS);
   try {
