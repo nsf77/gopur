@@ -39,3 +39,34 @@ bun run typecheck
 bun run --filter api build
 bun run --filter app build
 ```
+
+
+## Cloudflare Workers (Git deploy)
+
+Workers already created: `gopur-api`, `gopur-app` (account `f13e891dc4bb32f8c1450b76344ad1ca`).
+
+| Worker | URL |
+|--------|-----|
+| gopur-api | https://gopur-api.nsfxd.workers.dev |
+| gopur-app | https://gopur-app.nsfxd.workers.dev |
+
+### Dashboard Builds settings (after connecting the `nsf77/gopur` repo)
+
+**gopur-api** (production branch `main`)
+
+- Root directory: `api`
+- Build command: `cd .. && bun install`
+- Deploy command: `npx wrangler deploy`
+- Non-production deploy (optional): `npx wrangler versions upload`
+- Path includes: `api/**`
+
+**gopur-app** (production branch `main`)
+
+- Root directory: `app`
+- Build command: `cd .. && bun install && VITE_API_URL=https://gopur-api.nsfxd.workers.dev bun run build`
+- Deploy command: `npx wrangler deploy`
+- Path includes: `app/**`
+- Build env: `VITE_API_URL=https://gopur-api.nsfxd.workers.dev`
+
+D1 `gopur` (HKG) and KV `GOPUR_AUTH` are already bound in `api/wrangler.toml`. Set Worker secrets: `JWT_SECRET`, optional `BREVO_API_KEY`, `EMAIL_FROM`, `ADMIN_EMAILS`.
+
