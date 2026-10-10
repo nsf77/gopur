@@ -25,4 +25,4 @@ class_name = "ChatHub"
 
 [[migrations]]
 tag = "v4-chat-hub"
-new_classes = ["ChatHub"]
+new_sqlite_classes = ["ChatHub"]
