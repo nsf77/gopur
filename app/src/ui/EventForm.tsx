@@ -1,14 +1,7 @@
 import { For, Show } from "solid-js";
 import { createForm } from "../lib/form";
 import { t } from "../lib/i18n";
-import {
-  DISTRICTS,
-  DRAFT_ERROR_COPY,
-  parseEventWrite,
-  validateEventDraft,
-  type EventDraft,
-} from "../lib/event-draft";
-import { draftToEventBody } from "../lib/event-draft";
+import { DISTRICTS, eventDraftFormError, type EventDraft } from "../lib/event-draft";
 
 const FIELD =
   "mb-3 block w-full min-h-11 rounded-xl border border-divider bg-surface px-3 py-2 text-base text-text outline-none";
@@ -32,12 +25,8 @@ export function EventForm(props: {
     defaultValues: props.initial,
     canSubmitWhenInvalid: true,
     validators: {
-      onSubmit: ({ value }: { value: EventDraft }) => {
-        const draftErr = validateEventDraft(value);
-        if (draftErr) return DRAFT_ERROR_COPY[draftErr];
-        const writeErr = parseEventWrite(draftToEventBody(value));
-        return writeErr ?? undefined;
-      },
+      onChange: ({ value }: { value: EventDraft }) => eventDraftFormError(value),
+      onSubmit: ({ value }: { value: EventDraft }) => eventDraftFormError(value),
     },
     onSubmit: ({ value }: { value: EventDraft }) => {
       props.onSubmit(value);
@@ -51,8 +40,8 @@ export function EventForm(props: {
   };
 
   const formError = () => {
-    const errors = api.store.state.errors;
-    const first = errors[0];
+    if (api.store.state.submissionAttempts === 0) return props.error;
+    const first = api.store.state.errors[0];
     if (typeof first === "string") return first;
     return props.error;
   };

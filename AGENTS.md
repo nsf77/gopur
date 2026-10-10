@@ -26,7 +26,7 @@ Bun workspace monorepo. Workspaces: `app` (Solid PWA) and `api` (Hono on Cloudfl
 - Solid 2 + Vite + Tailwind v4 + TanStack Query.
 - Call the API **only** through the Hono RPC client typed from `api`'s `AppType`.
 - No Orval, no OpenAPI client generation.
-- Use ArkType-inferred types from `api` (do not introduce Zod/TypeBox). Use ts-belt in query `select` / mappers.
+- Import types from `api` (inferred from ArkType on the API). Do **not** depend on `arktype` in the app. Forms use TanStack Form built-in `onChange`/`onSubmit` validators (plain functions). Do not introduce Zod/Valibot/TypeBox. Use ts-belt in query `select` / mappers and form helpers.
 
 ## Brand / PWA
 

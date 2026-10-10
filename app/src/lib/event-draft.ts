@@ -1,6 +1,5 @@
-import { EventWrite } from "api";
-import type { Event } from "api";
-import { type } from "arktype";
+import type { Event, EventWrite } from "api";
+import { A, O, pipe, S } from "./belt";
 
 const HONG_KONG_OFFSET_MS = 8 * 60 * 60 * 1000;
 
@@ -75,18 +74,23 @@ export const DISTRICTS = [
 
 export type EventDraftError = "title" | "when" | "order" | "pin" | "age" | "capacity" | "price" | "cover";
 
-function optionalWholeNumber(value: string): number | null | "invalid" {
-  const trimmed = value.trim();
+function optionalNumber(value: string, pattern: RegExp): number | null | "invalid" {
+  const trimmed = S.trim(value);
   if (!trimmed) return null;
-  if (!/^\d+$/.test(trimmed)) return "invalid";
+  if (!pattern.test(trimmed)) return "invalid";
   return Number(trimmed);
 }
 
+function optionalWholeNumber(value: string): number | null | "invalid" {
+  return optionalNumber(value, /^\d+$/);
+}
+
 function coordinate(value: string): number | null | "invalid" {
-  const trimmed = value.trim();
-  if (!trimmed) return null;
-  if (!/^-?\d+(\.\d+)?$/.test(trimmed)) return "invalid";
-  return Number(trimmed);
+  return optionalNumber(value, /^-?\d+(\.\d+)?$/);
+}
+
+function asNumber(value: number | null | "invalid"): number | undefined {
+  return typeof value === "number" ? value : undefined;
 }
 
 export function parseHongKongDateTime(value: string): string | null {
@@ -160,14 +164,26 @@ export const DRAFT_ERROR_COPY: Record<EventDraftError, string> = {
   cover: "Cover image must be an http(s) URL.",
 };
 
-function i18nMap(en: string, zh: string): Record<string, string> | undefined {
-  const map: Record<string, string> = {};
-  if (en.trim()) map.en = en.trim();
-  if (zh.trim()) map["zh-Hant"] = zh.trim();
-  return Object.keys(map).length > 0 ? map : undefined;
+export function eventDraftFormError(draft: EventDraft): string | undefined {
+  return pipe(
+    O.fromNullable(validateEventDraft(draft)),
+    O.map((err) => DRAFT_ERROR_COPY[err]),
+    O.toUndefined,
+  );
 }
 
-export type EventWriteBody = typeof EventWrite.infer;
+function i18nMap(en: string, zh: string): Record<string, string> | undefined {
+  const entries = pipe(
+    [
+      ["en", S.trim(en)] as const,
+      ["zh-Hant", S.trim(zh)] as const,
+    ],
+    A.filter(([, text]) => text.length > 0),
+  );
+  return entries.length > 0 ? Object.fromEntries(entries) : undefined;
+}
+
+export type EventWriteBody = EventWrite;
 
 export function draftToEventBody(draft: EventDraft): EventWriteBody {
   const latitude = coordinate(draft.latitude);
@@ -187,12 +203,12 @@ export function draftToEventBody(draft: EventDraft): EventWriteBody {
     end_at: parseHongKongDateTime(draft.endsAt) ?? "",
     type: draft.type,
     district: district || undefined,
-    latitude: typeof latitude === "number" ? latitude : undefined,
-    longitude: typeof longitude === "number" ? longitude : undefined,
-    age_min: typeof ageMin === "number" ? ageMin : undefined,
-    age_max: typeof ageMax === "number" ? ageMax : undefined,
+    latitude: asNumber(latitude),
+    longitude: asNumber(longitude),
+    age_min: asNumber(ageMin),
+    age_max: asNumber(ageMax),
     age_mode: draft.ageMode,
-    capacity: typeof capacity === "number" ? capacity : null,
+    capacity: asNumber(capacity) ?? null,
     price_cents: hkdToCents(draft.priceHkd) ?? 0,
     price_note: priceNote,
     price_note_i18n: priceNote ? { en: priceNote, "zh-Hant": priceNote } : undefined,
@@ -207,10 +223,10 @@ export function draftToEventBody(draft: EventDraft): EventWriteBody {
   return body;
 }
 
-export function parseEventWrite(body: EventWriteBody): string | null {
-  const checked = EventWrite(body);
-  if (checked instanceof type.errors) return checked.summary;
-  return null;
+const EVENT_TYPES = ["volunteer", "community", "class", "official"] as const;
+
+function eventType(value: string): EventDraft["type"] {
+  return A.includes([...EVENT_TYPES], value as EventDraft["type"]) ? (value as EventDraft["type"]) : "community";
 }
 
 export function draftFromEvent(event: Event): EventDraft {
@@ -229,9 +245,7 @@ export function draftFromEvent(event: Event): EventDraft {
     locationZh: event.location_i18n["zh-Hant"] ?? "",
     startsAt: formatHongKongDateTimeInput(event.start_at),
     endsAt: formatHongKongDateTimeInput(event.end_at),
-    type: (["volunteer", "community", "class", "official"] as const).includes(event.type as EventDraft["type"])
-      ? (event.type as EventDraft["type"])
-      : "community",
+    type: eventType(event.type),
     district: event.district ?? "",
     latitude: event.latitude == null ? "" : String(event.latitude),
     longitude: event.longitude == null ? "" : String(event.longitude),
@@ -248,6 +262,8 @@ export function draftFromEvent(event: Event): EventDraft {
 }
 
 export function isEventHost(userId: string | null | undefined, event: Event): boolean {
-  if (!userId) return false;
-  return userId === event.host_user_id || userId === (event.organizer?.id ?? "");
+  return pipe(
+    O.fromNullable(userId),
+    O.mapWithDefault(false, (id) => id === event.host_user_id || id === (event.organizer?.id ?? "")),
+  );
 }
