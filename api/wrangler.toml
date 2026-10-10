@@ -1,9 +1,15 @@
 name = "gopur-api"
 main = "src/index.ts"
 compatibility_date = "2026-10-10"
+account_id = "f13e891dc4bb32f8c1450b76344ad1ca" # pragma: allowlist secret
 
+# D1 created in APAC.
 [[d1_databases]]
 binding = "DB"
 database_name = "gopur"
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "5845788b-a443-43ba-92ec-28754a902568"
 migrations_dir = "migrations"
+
+[[kv_namespaces]]
+binding = "GOPUR_AUTH"
+id = "fd21b33de2704609a40e6b27a9d18325"
