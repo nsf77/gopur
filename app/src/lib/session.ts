@@ -64,7 +64,7 @@ export function currentUser(): O.Option<User> {
 }
 
 export function sessionToken(): string {
-  return pipe(authToken(), O.getWithDefault(""));
+  return pipe(authToken(), O.mapWithDefault("", (token) => token));
 }
 
 export function sessionUser(): User | null {
@@ -75,7 +75,7 @@ export function viewerId(): string {
   return pipe(
     currentUser(),
     O.map((user) => user.id),
-    O.getWithDefault(""),
+    O.mapWithDefault("", (id) => id),
   );
 }
 
