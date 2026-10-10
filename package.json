@@ -4,7 +4,6 @@
   "packageManager": "bun@1.4.3",
   "workspaces": ["app", "api"],
   "scripts": {
-    "test": "bun test",
     "typecheck": "bun run --filter '*' typecheck",
     "build": "bun run --filter '*' build",
     "dev:api": "bun run --filter api dev",
