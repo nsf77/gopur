@@ -34,7 +34,7 @@ Bun workspace monorepo. Workspaces: `app` (Solid PWA) and `api` (Hono on Cloudfl
 - Lucide icons **only** via `~icons/lucide/*` (unplugin-icons, Solid compiler). Do not import `lucide-solid` or `@lucide/solid`.
 - Keep `@kobalte/tailwindcss` wired (`@plugin` in the CSS entry).
 - Later PWA stages should preserve this brand surface (theme token, Lucide via unplugin-icons).
-- **Later UI:** `@ark-ui/solid@6.0.0-next.0` + Tailwind v4 + Apple liquid-glass with Reduce Transparency. No UI rewrite in the API-read stage.
+- UI: `@kobalte/core@2.0.0-alpha` (subpath imports) for behavior; `class-variance-authority` (`cva`) for Tailwind class variants; Tailwind v4 + Apple liquid-glass with Reduce Transparency (`@kobalte/tailwindcss`). Do not add Ark UI.
 
 ## Checks
 

@@ -15,14 +15,11 @@ export default defineConfig({
   ],
   resolve: {
     // Package `exports` put `worker`/`node` (dist/server.js) ahead of `browser`.
-    // This client-only PWA must pin one browser copy of Solid 2; the solid-js
-    // shim then adapts Solid 1 APIs still emitted by @ark-ui/solid 6 next.
+    // This client-only PWA must pin one browser copy of Solid 2.
     alias: [
       { find: /^solid-js\/web$/, replacement: resolve(root, "node_modules/@solidjs/web/dist/web.js") },
       { find: /^@solidjs\/web$/, replacement: resolve(root, "node_modules/@solidjs/web/dist/web.js") },
-      { find: /^solid-js\/store$/, replacement: resolve(root, "src/shims/solid-js-store.ts") },
-      { find: "solid-js-runtime", replacement: resolve(root, "node_modules/solid-js/dist/solid.js") },
-      { find: /^solid-js$/, replacement: resolve(root, "src/shims/solid-js.ts") },
+      { find: /^solid-js$/, replacement: resolve(root, "node_modules/solid-js/dist/solid.js") },
     ],
     dedupe: ["solid-js", "@solidjs/web", "@solidjs/signals"],
   },

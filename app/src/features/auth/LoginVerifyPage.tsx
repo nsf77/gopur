@@ -1,20 +1,27 @@
 import { useNavigate, useSearchParams } from "@solidjs/router";
-import { createSignal, onCleanup } from "solid-js";
+import { Show, createSignal, onCleanup } from "solid-js";
 import { ApiError, startEmailOtp, verifyEmailOtp } from "../../lib/api";
 import { G } from "../../lib/belt";
 import { digitsOnlyCode, safeNext } from "../../lib/email";
+import { createForm } from "../../lib/form";
 import { t } from "../../lib/i18n";
 import { cooldownRemaining, startCooldown } from "../../lib/otp";
 import { isSignedIn, setSession } from "../../lib/session";
 import { queryClient } from "../../query";
 import { Button } from "../../ui/Button";
+import { OTP_LENGTH, OtpField } from "../../ui/OtpField";
 
 const LOGIN_EMAIL_KEY = "gopur.login.email";
+
+type VerifyForm = { code: string };
+
+function codeError(code: string): string | undefined {
+  return digitsOnlyCode(code).length === OTP_LENGTH ? undefined : t("auth.codeIncomplete");
+}
 
 export default function LoginVerifyPage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const [code, setCode] = createSignal("");
   const [error, setError] = createSignal("");
   const [busy, setBusy] = createSignal(false);
   const [seconds, setSeconds] = createSignal(0);
@@ -34,23 +41,38 @@ export default function LoginVerifyPage() {
     return null;
   }
 
-  const onSubmit = async (event: Event) => {
-    event.preventDefault();
-    setBusy(true);
-    setError("");
-    try {
-      const response = await verifyEmailOtp(email(), digitsOnlyCode(code()));
-      setSession(response);
-      queryClient.clear();
-      await queryClient.invalidateQueries({ queryKey: ["me"] });
-      await queryClient.invalidateQueries({ queryKey: ["feed"] });
-      navigate(next());
-    } catch (err) {
-      setError(err instanceof ApiError ? t("auth.invalidCode") : t("errors.offline"));
-      if (err instanceof ApiError && err.status === 401) setCode("");
-    } finally {
-      setBusy(false);
-    }
+  const { api, values } = createForm<VerifyForm>(() => ({
+    defaultValues: { code: "" },
+    validators: {
+      onChange: ({ value }) => codeError(value.code),
+      onSubmit: ({ value }) => codeError(value.code),
+    },
+    onSubmit: ({ value }) => {
+      void (async () => {
+        setBusy(true);
+        setError("");
+        try {
+          const response = await verifyEmailOtp(email(), digitsOnlyCode(value.code));
+          setSession(response);
+          queryClient.clear();
+          await queryClient.invalidateQueries({ queryKey: ["me"] });
+          await queryClient.invalidateQueries({ queryKey: ["feed"] });
+          navigate(next());
+        } catch (err) {
+          setError(err instanceof ApiError ? t("auth.invalidCode") : t("errors.offline"));
+          if (err instanceof ApiError && err.status === 401) api.setFieldValue("code", "");
+        } finally {
+          setBusy(false);
+        }
+      })();
+    },
+  }));
+
+  const fieldError = () => {
+    if (error()) return error();
+    if (api.store.state.submissionAttempts === 0) return "";
+    const first = api.store.state.errors[0];
+    return typeof first === "string" ? first : "";
   };
 
   const onResend = async () => {
@@ -68,18 +90,28 @@ export default function LoginVerifyPage() {
     <main class="mx-auto flex max-w-md flex-col gap-4 p-4 pb-24">
       <h1 class="m-0 text-2xl font-extrabold tracking-tight">{t("auth.verifyTitle")}</h1>
       <p class="m-0 text-sm text-text-muted">{t("auth.verifySubtitle", { email: email() })}</p>
-      {error() ? <p class="m-0 text-sm text-accent">{error()}</p> : null}
-      <form class="flex flex-col gap-3" onSubmit={(e) => void onSubmit(e)}>
-        <label class="grid gap-1 text-sm font-medium">
-          {t("auth.codeLabel")}
-          <input
-            class="min-h-11 rounded-md border border-divider bg-surface px-3 tracking-[0.4em]"
-            inputmode="numeric"
-            autocomplete="one-time-code"
-            value={code()}
-            onInput={(e) => setCode(digitsOnlyCode(e.currentTarget.value))}
-          />
-        </label>
+      <Show when={fieldError()}>
+        <p class="m-0 text-sm text-accent" role="alert">
+          {fieldError()}
+        </p>
+      </Show>
+      <form
+        class="flex flex-col gap-3"
+        novalidate
+        onSubmit={(event) => {
+          event.preventDefault();
+          void api.handleSubmit();
+        }}
+      >
+        <OtpField
+          name="code"
+          label={t("auth.codeLabel")}
+          value={values().code}
+          disabled={busy()}
+          invalid={Boolean(fieldError())}
+          onChange={(code) => api.setFieldValue("code", digitsOnlyCode(code))}
+          onComplete={() => void api.handleSubmit()}
+        />
         <Button type="submit" disabled={busy()} class="min-h-11">
           {t("auth.verifyButton")}
         </Button>
