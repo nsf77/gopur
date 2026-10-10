@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@plugin "@kobalte/tailwindcss";
+
+@theme {
+  --color-accent: #304385;
+}
