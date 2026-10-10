@@ -473,9 +473,16 @@ export default app;
 export {
   AuthResponse,
   Event,
+  EventList,
   EventPage,
+  FollowState,
+  LikeState,
+  LikersPage,
   Organizer,
   OrganizerDirectory,
+  PatchMe,
   PublicProfile,
+  SaveState,
+  ShareState,
   User,
 } from "./schemas";

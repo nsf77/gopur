@@ -2,15 +2,14 @@
 
 Bun workspace monorepo for the Gopur PWA (`app/`) and Cloudflare Workers API (`api/`).
 
-## Stage 3 (auth + writes)
+## Stage 4 (PWA screens)
 
 - Workspaces: `app`, `api`
 - `api`: Hono on Workers, ArkType, D1 (HKG `gopur`) + KV `GOPUR_AUTH`
-- Auth: email OTP (KV) → JWT; Brevo when `BREVO_API_KEY` is set, otherwise stub
-- Writes: create/update event, like/save/share, follow, profile patch
-- `app`: healthz + feed + like/save via `hc`
+- `app`: Solid 2 PWA — feed, explore, event detail, email OTP, profile/settings, like/save via Hono RPC + TanStack Query
+- UI: `@ark-ui/solid`, Tailwind v4, liquid-glass with Reduce Transparency, accent `#304385`
 
-Not in this stage: chat/WS, importer, full PWA, production secrets rotation.
+Not in this stage: chat/WS, importer, full host editor.
 
 ## Setup
 
@@ -63,10 +62,10 @@ Workers already created: `gopur-api`, `gopur-app` (account `f13e891dc4bb32f8c145
 **gopur-app** (production branch `main`)
 
 - Root directory: `app`
-- Build command: `cd .. && bun install && VITE_API_URL=https://gopur-api.nsfxd.workers.dev bun run build`
+- Build command: `cd .. && bun install && VITE_API_URL=https://go.pur.run/api bun run build`
 - Deploy command: `npx wrangler deploy`
 - Path includes: `app/**`
-- Build env: `VITE_API_URL=https://gopur-api.nsfxd.workers.dev`
+- Build env: `VITE_API_URL=https://go.pur.run/api`
 
 D1 `gopur` (HKG) and KV `GOPUR_AUTH` are already bound in `api/wrangler.toml`. Set Worker secrets: `JWT_SECRET`, optional `BREVO_API_KEY`, `EMAIL_FROM`, `ADMIN_EMAILS`.
 
