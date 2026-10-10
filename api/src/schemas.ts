@@ -336,3 +336,58 @@ export const FollowState = type({
   followee_id: "string",
 });
 export type FollowState = typeof FollowState.infer;
+
+export const MyEventsQuery = type({
+  "when?": "string",
+  "lang?": "string",
+  "locale?": "string",
+});
+export type MyEventsQuery = typeof MyEventsQuery.infer;
+
+export const MyEvent = type({
+  signup_id: "string",
+  status: "string",
+  event: Event,
+});
+export type MyEvent = typeof MyEvent.infer;
+
+export const MyEventList = type({ events: MyEvent.array() });
+export type MyEventList = typeof MyEventList.infer;
+
+export const NotificationsQuery = type({
+  "cursor?": "string",
+  "limit?": "string",
+});
+export type NotificationsQuery = typeof NotificationsQuery.infer;
+
+export const NotificationIdParam = type({ id: "string" });
+export type NotificationIdParam = typeof NotificationIdParam.infer;
+
+export const NotificationData = type("Record<string, string>");
+export type NotificationData = typeof NotificationData.infer;
+
+export const Notification = type({
+  id: "string",
+  type: "string",
+  category: "string",
+  title: "string",
+  body: "string",
+  data: NotificationData,
+  read: "boolean",
+  "read_at?": "string",
+  created_at: "string",
+});
+export type Notification = typeof Notification.infer;
+
+export const NotificationList = type({
+  notifications: Notification.array(),
+  unread_count: "number",
+  "next_cursor?": "string",
+});
+export type NotificationList = typeof NotificationList.infer;
+
+export const UnreadCount = type({ count: "number" });
+export type UnreadCount = typeof UnreadCount.infer;
+
+export const UnreadAfterReadAll = type({ unread_count: "number" });
+export type UnreadAfterReadAll = typeof UnreadAfterReadAll.infer;

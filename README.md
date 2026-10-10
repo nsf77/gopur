@@ -2,15 +2,16 @@
 
 Bun workspace monorepo for the Gopur PWA (`app/`) and Cloudflare Workers API (`api/`).
 
-## Stage 3 (auth + writes)
+## Stage 4 (my events, host editor, notifications)
 
 - Workspaces: `app`, `api`
 - `api`: Hono on Workers, ArkType, D1 (HKG `gopur`) + KV `GOPUR_AUTH`
-- Auth: email OTP (KV) → JWT; Brevo when `BREVO_API_KEY` is set, otherwise stub
+- Lists: `GET /me/events`, `/me/saved`, `/me/likes`, `/users/:id/events`
+- Notifications: D1 inbox + `GET /notifications`, unread-count, mark-read
 - Writes: create/update event, like/save/share, follow, profile patch
-- `app`: healthz + feed + like/save via `hc`
+- `app`: `/my-events`, `/event/new`, `/event/:id/edit`, `/notifications` via `hc`
 
-Not in this stage: chat/WS, importer, full PWA, production secrets rotation.
+Not in this stage: chat/WS Durable Objects, importer cron, production secrets rotation.
 
 ## Setup
 

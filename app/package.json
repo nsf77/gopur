@@ -9,11 +9,15 @@
     "deploy": "wrangler deploy"
   },
   "dependencies": {
+    "@ark-ui/solid": "6.0.0-next.0",
     "@kobalte/tailwindcss": "^0.9.0",
     "@mobily/ts-belt": "^3.13.1",
+    "@solidjs/router": "2.0.0-next.34",
     "@solidjs/web": "2.0.0-rc.14",
+    "@tanstack/form-core": "1.33.5",
     "@tanstack/solid-query": "6.0.0-rc.5",
     "api": "workspace:*",
+    "arktype": "^2.2.8",
     "hono": "^4.10.0",
     "solid-js": "2.0.0-rc.14"
   },

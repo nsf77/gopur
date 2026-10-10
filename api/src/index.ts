@@ -46,6 +46,8 @@ import {
 } from "./schemas";
 import { searchIDs, type SearchQuery } from "./search";
 import { matchQuery } from "./searchtext";
+import { meLists } from "./me-lists";
+import { notes } from "./notifications";
 import type { Bindings } from "./types";
 import { writes } from "./writes";
 
@@ -465,15 +467,22 @@ WHERE l.event_id = ? AND u.banned_at IS NULL
     return c.json(found);
   });
 
-const app = reads.route("/", writes);
+const app = reads.route("/", writes).route("/", meLists).route("/", notes);
 export type AppType = typeof app;
 export default app;
 export {
   AuthResponse,
   Event,
+  EventList,
   EventPage,
+  EventWrite,
+  MyEvent,
+  MyEventList,
+  Notification,
+  NotificationList,
   Organizer,
   OrganizerDirectory,
   PublicProfile,
+  UnreadCount,
   User,
 } from "./schemas";
