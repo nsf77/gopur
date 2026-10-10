@@ -9,4 +9,4 @@ binding = "ASSETS"
 not_found_handling = "single-page-application"
 
 [vars]
-VITE_API_URL = "https://gopur-api.nsfxd.workers.dev"
+VITE_API_URL = "https://go.pur.run/api"
