@@ -28,3 +28,7 @@ export async function batch(db: D1Database, statements: D1PreparedStatement[]): 
   if (statements.length === 0) return [];
   return db.batch(statements);
 }
+
+export function placeholders(n: number): string {
+  return Array.from({ length: n }, () => "?").join(",");
+}

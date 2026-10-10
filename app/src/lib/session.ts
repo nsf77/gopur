@@ -63,6 +63,22 @@ export function currentUser(): O.Option<User> {
   return pipe(currentSession, O.map((s) => s.user));
 }
 
+export function sessionToken(): string {
+  return pipe(authToken(), O.getWithDefault(""));
+}
+
+export function sessionUser(): User | null {
+  return pipe(currentUser(), O.toNullable);
+}
+
+export function viewerId(): string {
+  return pipe(
+    currentUser(),
+    O.map((user) => user.id),
+    O.getWithDefault(""),
+  );
+}
+
 export function setSession(auth: AuthResponse): void {
   persist(O.Some({ v: 1, token: auth.token, user: auth.user }));
 }

@@ -2,12 +2,10 @@ import type { RouteSectionProps } from "@solidjs/router";
 import { createRouter, defineRoutes } from "@solidjs/router";
 import { QueryClientProvider } from "@tanstack/solid-query";
 import { lazy } from "solid-js";
-import { t } from "./lib/i18n";
 import { initSession, onSignOut } from "./lib/session";
 import { queryClient } from "./query";
 import { AppErrorBoundary } from "./shell/AppErrorBoundary";
 import { AppShell } from "./shell/AppShell";
-import StubPage from "./pages/StubPage";
 
 const FeedPage = lazy(() => import("./features/feed/FeedPage"));
 const ExplorePage = lazy(() => import("./features/explore/ExplorePage"));
@@ -24,6 +22,8 @@ const MyEventsPage = lazy(() => import("./pages/MyEventsPage"));
 const NewEventPage = lazy(() => import("./pages/NewEventPage"));
 const EditEventPage = lazy(() => import("./pages/EditEventPage"));
 const NotificationsPage = lazy(() => import("./pages/NotificationsPage"));
+const ChatListPage = lazy(() => import("./features/chat/ChatPages").then((m) => ({ default: m.ChatListPage })));
+const ChatThreadPage = lazy(() => import("./features/chat/ChatPages").then((m) => ({ default: m.ThreadPage })));
 
 const Router = createRouter({
   routes: defineRoutes([
@@ -40,7 +40,8 @@ const Router = createRouter({
     { path: "/settings", component: SettingsPage },
     { path: "/user/:id", component: UserProfilePage },
     { path: "/organizer/:key", component: OrganizerPage },
-    { path: "/chat", component: () => <StubPage message={t("stub.chat")} /> },
+    { path: "/chat", component: ChatListPage },
+    { path: "/chat/:id", component: ChatThreadPage },
     { path: "/my-events", component: MyEventsPage },
     { path: "/notifications", component: NotificationsPage },
   ]),

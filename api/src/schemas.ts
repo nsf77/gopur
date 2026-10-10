@@ -391,3 +391,97 @@ export type UnreadCount = typeof UnreadCount.infer;
 
 export const UnreadAfterReadAll = type({ unread_count: "number" });
 export type UnreadAfterReadAll = typeof UnreadAfterReadAll.infer;
+
+export const DeviceBody = type({ device_id: "string" });
+export type DeviceBody = typeof DeviceBody.infer;
+
+export const DeviceQuery = type({ device_id: "string" });
+export type DeviceQuery = typeof DeviceQuery.infer;
+
+export const EnvelopeAck = type({
+  device_id: "string",
+  ids: "string[]",
+});
+export type EnvelopeAck = typeof EnvelopeAck.infer;
+
+export const ConvFolderQuery = type({
+  "folder?": "string",
+  "cursor?": "string",
+  "limit?": "string",
+});
+export type ConvFolderQuery = typeof ConvFolderQuery.infer;
+
+export const ConvIdParam = type({ id: "string" });
+export type ConvIdParam = typeof ConvIdParam.infer;
+
+export const CreateConversation = type({
+  kind: "string",
+  "user_id?": "string",
+  "title?": "string",
+  "photo_url?": "string",
+  "member_ids?": "string[]",
+});
+export type CreateConversation = typeof CreateConversation.infer;
+
+export const SendMessageBody = type({
+  kind: "string",
+  "body?": "string",
+  "image_url?": "string",
+  "event_id?": "string",
+  "reply_to?": "string",
+});
+export type SendMessageBody = typeof SendMessageBody.infer;
+
+export const MessagesQuery = type({
+  "before?": "string",
+  "after?": "string",
+  "limit?": "string",
+});
+export type MessagesQuery = typeof MessagesQuery.infer;
+
+export const ChatReaction = type({
+  emoji: "string",
+  count: "number",
+  me: "boolean",
+  user_ids: "string[]",
+});
+export type ChatReaction = typeof ChatReaction.infer;
+
+export const ChatEventCard = type({
+  id: "string",
+  title: "string",
+  start_at: "string",
+  "cover_image_url?": "string",
+  "cancelled?": "boolean",
+  "host_user_id?": "string",
+});
+export type ChatEventCard = typeof ChatEventCard.infer;
+
+export const ChatMessage = type({
+  id: "string",
+  conversation_id: "string",
+  sender_id: "string",
+  kind: "string",
+  reactions: ChatReaction.array(),
+  created_at: "string",
+  "body?": "string",
+  "image_url?": "string",
+  "event_id?": "string",
+  "event?": ChatEventCard,
+  "event_hidden?": "boolean",
+  "reply_to?": "string",
+  "unsent_at?": "string",
+});
+export type ChatMessage = typeof ChatMessage.infer;
+
+export const ChatEnvelope = type({
+  id: "string",
+  type: "string",
+  conversation_id: "string",
+  message_id: "string",
+  created_at: "string",
+  "message?": ChatMessage,
+  "status?": "string",
+  "at?": "string",
+});
+export type ChatEnvelope = typeof ChatEnvelope.infer;

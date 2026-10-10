@@ -196,3 +196,12 @@ export async function markAllNotificationsRead(): Promise<{ unread_count: number
 export function feedTitles(events: Event[]): readonly string[] {
   return pipe(events, A.filterMap((ev) => O.fromFalsy(ev.title)));
 }
+
+export function apiBase(): string {
+  return baseUrl();
+}
+
+export function jsonOrThrow<T>(res: Response, label: string): Promise<T> {
+  if (!res.ok) throw new ApiError(res.status, `${label} ${res.status}`);
+  return res.json() as Promise<T>;
+}
