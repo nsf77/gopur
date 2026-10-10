@@ -9,7 +9,9 @@ Bun workspace monorepo for the Gopur PWA (`app/`) and Cloudflare Workers API (`a
 - `app`: Solid 2 PWA — feed, explore, event detail, email OTP, profile/settings, like/save via Hono RPC + TanStack Query
 - UI: `@ark-ui/solid`, Tailwind v4, liquid-glass with Reduce Transparency, accent `#304385`
 
-Not in this stage: chat/WS, importer, full host editor.
+Importer: Wrangler cron `0 16 * * *` (00:00 HKT). Manual `POST /import/run` with `X-Import-Token`.
+
+Not in this stage: chat/WS, full host editor.
 
 ## Setup
 
@@ -29,7 +31,7 @@ bun run dev:api
 bun run dev:app
 ```
 
-Optional Worker vars: `JWT_SECRET`, `BREVO_API_KEY`, `ADMIN_EMAILS`, `EMAIL_FROM`.
+Optional Worker vars: `JWT_SECRET`, `BREVO_API_KEY`, `ADMIN_EMAILS`, `EMAIL_FROM`, `IMPORT_TOKEN`.
 
 ## Check
 
@@ -67,5 +69,5 @@ Workers already created: `gopur-api`, `gopur-app` (account `f13e891dc4bb32f8c145
 - Path includes: `app/**`
 - Build env: `VITE_API_URL=https://go.pur.run/api`
 
-D1 `gopur` (HKG) and KV `GOPUR_AUTH` are already bound in `api/wrangler.toml`. Set Worker secrets: `JWT_SECRET`, optional `BREVO_API_KEY`, `EMAIL_FROM`, `ADMIN_EMAILS`.
+D1 `gopur` (HKG) and KV `GOPUR_AUTH` are already bound in `api/wrangler.toml`. Set Worker secrets: `JWT_SECRET`, `IMPORT_TOKEN`, optional `BREVO_API_KEY`, `EMAIL_FROM`, `ADMIN_EMAILS`.
 

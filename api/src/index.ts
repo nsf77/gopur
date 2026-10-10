@@ -46,6 +46,7 @@ import {
 } from "./schemas";
 import { searchIDs, type SearchQuery } from "./search";
 import { matchQuery } from "./searchtext";
+import { imports } from "./importer/http";
 import type { Bindings } from "./types";
 import { writes } from "./writes";
 
@@ -465,7 +466,7 @@ WHERE l.event_id = ? AND u.banned_at IS NULL
     return c.json(found);
   });
 
-const api = reads.route("/", writes);
+const api = reads.route("/", writes).route("/", imports);
 export type AppType = typeof api;
 /** Serve under /api on go.pur.run and at root on *.workers.dev */
 const app = new Hono<{ Bindings: Bindings }>().route("/api", api).route("/", api);

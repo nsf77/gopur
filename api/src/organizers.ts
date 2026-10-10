@@ -20,6 +20,15 @@ export function fold(s: string): string {
   return normalize(s).toLowerCase();
 }
 
+export function groupKeyFromLocales(zh: string, en: string): string {
+  if (present(zh)) {
+    const key = fold(zh);
+    if (key) return key;
+  }
+  if (present(en)) return fold(en);
+  return "";
+}
+
 export function matches(name: string, locales: Record<string, string>, q: string): boolean {
   q = q.toLowerCase().trim();
   if (!q) return true;

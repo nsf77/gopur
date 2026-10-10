@@ -1,7 +1,12 @@
 name = "gopur-api"
-main = "src/index.ts"
+main = "src/worker.ts"
 compatibility_date = "2026-10-10"
 account_id = "f13e891dc4bb32f8c1450b76344ad1ca" # pragma: allowlist secret
+
+# Daily importer: 00:00 HKT (16:00 UTC). Manual: POST /import/run with X-Import-Token.
+# Set Worker secret IMPORT_TOKEN. Optional: IMPORT_SOURCE_TIMEOUT (Go duration, default 15m).
+[triggers]
+crons = ["0 16 * * *"]
 
 # D1 created in HKG.
 [[d1_databases]]

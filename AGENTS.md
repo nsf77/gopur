@@ -17,7 +17,7 @@ Bun workspace monorepo. Workspaces: `app` (Solid PWA) and `api` (Hono on Cloudfl
 - Read routes: `GET /healthz`, `/feed`, `/events`, `/events/:id`, `/events/:id/likers`, `/search/events`, `/organizers`, `/organizers/:key`.
 - Auth: `POST /auth/email/start`, `POST /auth/email/verify`, `GET|PATCH /me` (JWT + KV OTP). Email via Brevo when `BREVO_API_KEY` is set; otherwise stub.
 - Writes: `POST|PATCH /events`, like/save/share, follow, `GET /users/:id`.
-- Chat/WS, importer, and production deploy are later stages.
+- Importer: Wrangler cron + `POST /import/run` (`IMPORT_TOKEN`). Chat/WS and production deploy are later stages.
 
 ## App (`app/`)
 
