@@ -1,0 +1,12 @@
+name = "gopur-app"
+main = "src/worker.ts"
+compatibility_date = "2026-10-10"
+account_id = "f13e891dc4bb32f8c1450b76344ad1ca"
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+
+[vars]
+VITE_API_URL = "https://gopur-api.nsfxd.workers.dev"
