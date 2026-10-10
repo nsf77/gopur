@@ -1,4 +1,3 @@
-import { useTabs } from "@ark-ui/solid/tabs";
 import { useQuery } from "@tanstack/solid-query";
 import type { Event, MyEvent } from "api";
 import { For, Show, createMemo, createSignal } from "solid-js";
@@ -18,25 +17,21 @@ const TAB_ITEMS: Array<{ value: TabKey; label: string }> = [
 ];
 
 function TabStrip(props: { value: TabKey; onChange: (value: TabKey) => void }) {
-  const tabs = useTabs(() => ({
-    id: "my-events-tabs",
-    value: props.value,
-    onValueChange: (details: { value: string | null }) => {
-      if (details.value) props.onChange(details.value as TabKey);
-    },
-  }));
   return (
-    <div {...tabs().getRootProps()} class="mb-4">
-      <div {...tabs().getListProps()} class="glass-card flex gap-1 overflow-x-auto rounded-full p-1">
+    <div class="mb-4" role="tablist" aria-label="My events">
+      <div class="glass-card flex gap-1 overflow-x-auto rounded-full p-1">
         <For each={TAB_ITEMS} keyed={(item) => item.value}>
           {(item) => {
-            const selected = () => tabs().value === item().value;
+            const selected = () => props.value === item().value;
             return (
               <button
-                {...tabs().getTriggerProps({ value: item().value })}
+                type="button"
+                role="tab"
+                aria-selected={selected() ? "true" : "false"}
                 class={`min-h-10 shrink-0 rounded-full px-3 text-sm font-medium ${
                   selected() ? "bg-accent text-white" : "text-accent"
                 }`}
+                onClick={() => props.onChange(item().value)}
               >
                 {item().label}
               </button>
