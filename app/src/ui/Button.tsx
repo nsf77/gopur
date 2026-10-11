@@ -6,16 +6,18 @@ export type ButtonVariant = NonNullable<ButtonVariants["variant"]>;
 
 export function Button({
   variant,
+  width,
   className,
   children,
   to,
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant;
+  width?: ButtonVariants["width"];
   children: ReactNode;
   to?: LinkProps["to"];
 }) {
-  const cls = button({ variant, class: className });
+  const cls = button({ variant, width, class: className });
   if (to) {
     return (
       <Link to={to} className={cls}>

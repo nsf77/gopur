@@ -1,11 +1,14 @@
-import type { User } from "api";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { jwtIsExpired } from "../lib/jwt";
+import type { AuthResponse, User } from "../lib/schemas";
+import { queryClient } from "../lib/query";
 
 export type SessionSlice = {
   token: string | null;
   user: User | null;
-  setSession: (token: string, user: User) => void;
+  setSession: (auth: AuthResponse) => void;
+  updateUser: (user: User) => void;
   signOut: () => void;
 };
 
@@ -14,17 +17,32 @@ export const useSessionStore = create<SessionSlice>()(
     (set) => ({
       token: null,
       user: null,
-      setSession: (token, user) => set({ token, user }),
-      signOut: () => set({ token: null, user: null }),
+      setSession: (auth) => set({ token: auth.token, user: auth.user }),
+      updateUser: (user) => set({ user }),
+      signOut: () => {
+        set({ token: null, user: null });
+        queryClient.clear();
+      },
     }),
-    { name: "gopur.session" },
+    {
+      name: "gopur.session",
+      onRehydrateStorage: () => (state) => {
+        if (state?.token && jwtIsExpired(state.token)) state.signOut();
+      },
+    },
   ),
 );
 
 export function sessionToken(): string {
-  return useSessionStore.getState().token ?? "";
+  const token = useSessionStore.getState().token;
+  if (!token) return "";
+  if (jwtIsExpired(token)) {
+    useSessionStore.getState().signOut();
+    return "";
+  }
+  return token;
 }
 
 export function isSignedIn(): boolean {
-  return Boolean(useSessionStore.getState().token);
+  return Boolean(sessionToken());
 }
