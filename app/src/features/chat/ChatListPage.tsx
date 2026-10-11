@@ -7,7 +7,6 @@ import { Avatar } from "../../ui/Avatar";
 import { Button } from "../../ui/Button";
 import { StatusMessage } from "../../ui/StatusMessage";
 import { Tabs } from "../../ui/Tabs";
-import { button, chatRow, chatUnread } from "../../ui/styles";
 import { createDm, fetchConversations } from "./api";
 import { conversationPeer, conversationTitle, lastMessagePreview } from "./display";
 import { startChatRelay, stopChatRelay } from "./relay";
@@ -54,9 +53,9 @@ export function ChatListPage() {
     return (
       <main className="grid gap-4 p-4">
         <p className="m-0 text-sm text-text-muted">{m.chat_signInRequired()}</p>
-        <Link to="/login" search={{ next: "/chat" }} className={button()}>
+        <Button to="/login" search={{ next: "/chat" }}>
           {m.common_signIn()}
-        </Link>
+        </Button>
       </main>
     );
   }
@@ -130,14 +129,20 @@ function ConversationList(props: {
         const title = conversationTitle(row, props.viewer);
         return (
           <li key={row.id}>
-            <Link to="/chat/$id" params={{ id: row.id }} className={chatRow()}>
+            <Link
+              to="/chat/$id"
+              params={{ id: row.id }}
+              className="flex w-full items-center gap-3 border-b border-divider px-4 py-3 text-left"
+            >
               <Avatar name={title} src={row.photo_url ?? peer?.avatar_url} size="md" />
               <div className="min-w-0 flex-1">
                 <p className="m-0 truncate font-semibold">{title}</p>
                 <p className="m-0 truncate text-sm text-text-muted">{lastMessagePreview(row.last_message)}</p>
               </div>
               {row.unread_count > 0 ? (
-                <span className={chatUnread()}>{row.unread_count > 9 ? "9+" : row.unread_count}</span>
+                <span className="rounded-pill bg-accent px-2 py-0.5 text-[10px] font-bold text-accent-contrast">
+                  {row.unread_count > 9 ? "9+" : row.unread_count}
+                </span>
               ) : null}
             </Link>
           </li>

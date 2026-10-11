@@ -6,19 +6,19 @@ Bun workspace monorepo for the Gopur SPA (`app/`) and Cloudflare Workers API (`a
 
 - Workspaces: `app`, `api`
 - `api`: Hono on Workers, ArkType, D1 (HKG `gopur`) + KV `GOPUR_AUTH` + Durable Object `CHAT_HUB`
-- `app`: React 19 SPA (React Compiler) — Home feed (`/`, infinite scroll), Explore (`/explore`, nuqs search/filters), Event detail (`/event/:id` with like/save/share). Other routes (`/login`, `/chat`, `/my-events`, `/settings`, `/notifications`, `/profile`) remain scaffold. Hono RPC (`hc` + `AppType`) + TanStack Query; Valibot parses client payloads. Zustand session. Paraglide JS `en` + `zh-Hant`.
-- UI: `@base-ui/react` (behavior) + `class-variance-authority` (class variants), Tailwind v4, liquid-glass with Reduce Transparency, accent `#304385`, Lucide (`lucide-react`)
-- Lists: `GET /me/events`, `/me/saved`, `/me/likes`, `/users/:id/events` (API; UI later)
-- Notifications: D1 inbox + `GET /notifications` (API; UI later)
-- Host editor: `POST|PATCH /events` (API; UI later)
+- `app`: React 19 SPA (React Compiler) — Home feed (`/`), Explore (`/explore`), Event detail (`/event/:id` with like/save/share), email OTP login, WhatsApp-style chat (`/chat`, `/chat/:id`), my-events + host editor (`/my-events`, `/event/new`, `/event/:id/edit`), notifications, settings, and profile. Hono RPC (`hc` + `AppType`) + TanStack Query; Valibot parses client payloads. Zustand session. Paraglide JS `en` + `zh-Hant`.
+- UI: `@cloudflare/kumo` (granular component imports; primitives for OTP/avatar), Tailwind v4 (`@source` Kumo dist + Gopur `#304385` on Kumo brand tokens), liquid-glass with Reduce Transparency as app chrome, Phosphor (`@phosphor-icons/react`) only — no Lucide.
+- Lists: `GET /me/events`, `/me/saved`, `/me/likes`, `/users/:id/events`
+- Notifications: D1 inbox + `GET /notifications`
+- Host editor: `POST|PATCH /events`
 - Importer: Wrangler cron `0 16 * * *` (00:00 HKT). Manual `POST /import/run` with `X-Import-Token`.
-- Chat: store-and-forward relay over `/ws` (and `/api/ws`) (API; UI later)
+- Chat: store-and-forward relay over `/ws` (and `/api/ws`)
 
 Not in this stage: production secrets rotation.
 
 ## Cloudflare Kumo vs deploy
 
-[`@cloudflare/kumo`](https://www.npmjs.com/package/@cloudflare/kumo) is Cloudflare’s React **component library**, not the Worker/assets deploy path. Gopur’s SPA uses Base UI + Lucide instead of Kumo/Phosphor.
+[`@cloudflare/kumo`](https://www.npmjs.com/package/@cloudflare/kumo) is Cloudflare’s React **component library** (the SPA UI stack). It is not the Worker/assets deploy path. Icons are Phosphor (`@phosphor-icons/react`), which Kumo peers; Lucide is not used.
 
 Deploy stays **Vite build + Wrangler Workers assets** (`app/wrangler.toml`: `assets.directory = "./dist"`, `not_found_handling = "single-page-application"`, `src/worker.ts` ASSETS fetch) so go.pur.run / `gopur-app` dashboard Builds keep working. The current Cloudflare Vite SPA convention is `@cloudflare/vite-plugin`; it is not wired yet so the existing `assets.directory` snapshot deploy is unchanged.
 

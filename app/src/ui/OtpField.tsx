@@ -1,5 +1,5 @@
-import { OTPField } from "@base-ui/react/otp-field";
-import { otpInput, otpLabel, otpRoot, otpSlots } from "./styles";
+import { OTPField } from "@cloudflare/kumo/primitives/otp-field";
+import { cn } from "@cloudflare/kumo/utils";
 
 export const OTP_LENGTH = 6;
 
@@ -13,8 +13,8 @@ export function OtpField(props: {
   onValueComplete?: (value: string) => void;
 }) {
   return (
-    <div className={otpRoot()}>
-      <span className={otpLabel()}>{props.label}</span>
+    <div className="grid gap-1">
+      <span className="text-sm font-medium text-kumo-default">{props.label}</span>
       <OTPField.Root
         length={OTP_LENGTH}
         name={props.name}
@@ -25,11 +25,14 @@ export function OtpField(props: {
         onValueChange={(value) => props.onValueChange?.(value)}
         onValueComplete={(value) => props.onValueComplete?.(value)}
       >
-        <div className={otpSlots()}>
+        <div className="flex gap-2">
           {Array.from({ length: OTP_LENGTH }, (_, index) => (
             <OTPField.Input
               key={index}
-              className={otpInput({ invalid: Boolean(props.invalid) })}
+              className={cn(
+                "flex size-11 items-center justify-center rounded-md border bg-kumo-base text-center text-lg font-semibold tabular-nums text-kumo-default outline-none data-focused:border-kumo-brand",
+                props.invalid ? "border-kumo-danger" : "border-kumo-line",
+              )}
               aria-invalid={props.invalid || undefined}
               aria-label={index === 0 ? props.label : `Character ${index + 1} of ${OTP_LENGTH}`}
             />

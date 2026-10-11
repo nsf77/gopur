@@ -81,7 +81,7 @@ export function LoginPage({ next }: { next?: string }) {
             setError("");
           }}
         />
-        <Button type="submit" disabled={busy} width="full">
+        <Button type="submit" disabled={busy} loading={busy} width="full">
           {busy ? m.common_loading() : m.auth_sendCode()}
         </Button>
       </form>

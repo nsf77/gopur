@@ -91,7 +91,7 @@ export function LoginVerifyPage({ email: searchEmail, next }: { email?: string; 
           }}
           onValueComplete={(value) => submit(value)}
         />
-        <Button type="submit" disabled={busy} width="full">
+        <Button type="submit" disabled={busy} loading={busy} width="full">
           {busy ? m.common_loading() : m.auth_verifyButton()}
         </Button>
       </form>

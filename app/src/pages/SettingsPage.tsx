@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Pencil } from "lucide-react";
+import { PencilSimpleIcon } from "@phosphor-icons/react";
 import { getLocale, setLocale } from "../paraglide/runtime.js";
 import { m } from "../paraglide/messages.js";
 import { isSignedIn, useSessionStore } from "../stores/session";
@@ -64,13 +64,10 @@ export function SettingsPage() {
         <section className="grid gap-2">
           <h2 className="m-0 text-base font-bold">{m.settings_account()}</h2>
           <Link className={ROW} to="/profile/edit">
-            <Pencil className="size-5" aria-hidden="true" />
+            <PencilSimpleIcon className="size-5" aria-hidden="true" />
             {m.settings_editProfile()}
           </Link>
-          <Button
-            variant="secondary"
-            onClick={() => setSignOutOpen(true)}
-          >
+          <Button variant="secondary" onClick={() => setSignOutOpen(true)}>
             {m.settings_signOut()}
           </Button>
         </section>

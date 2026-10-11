@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Input } from "@cloudflare/kumo/components/input";
+import { Select } from "@cloudflare/kumo/components/select";
 import {
   DISTRICTS,
   clearedLockedFields,
@@ -10,7 +12,6 @@ import {
 import { m } from "../../paraglide/messages.js";
 import { Button } from "../../ui/Button";
 import { RadioGroup } from "../../ui/RadioGroup";
-import { fieldLabel, selectInput, textInput } from "../../ui/styles";
 import { TextAreaField, TextField } from "../../ui/TextField";
 
 function draftErrorMessage(error: string): string {
@@ -82,20 +83,16 @@ export function EventForm(props: {
         value={draft.locationZh}
         onValueChange={(locationZh) => patch({ locationZh })}
       />
-      <label className="grid gap-1">
-        <span className={fieldLabel()}>{m.eventEditor_district()}</span>
-        <select className={selectInput()} value={draft.district} onChange={(event) => patch({ district: event.currentTarget.value })}>
-          <option value="">—</option>
-          {DISTRICTS.map((id) => (
-            <option key={id} value={id}>
-              {id}
-            </option>
-          ))}
-        </select>
-      </label>
+      <Select
+        label={m.eventEditor_district()}
+        value={draft.district || null}
+        onValueChange={(district) => patch({ district: typeof district === "string" ? district : "" })}
+        items={[{ label: "—", value: "" }, ...DISTRICTS.map((id) => ({ label: id, value: id }))]}
+      />
       <p className="m-0 text-sm font-semibold">{m.eventEditor_type()}</p>
       <RadioGroup
         name="event-type"
+        aria-label={m.eventEditor_type()}
         value={draft.type}
         onValueChange={(type) => patch({ type: type as EventDraft["type"] })}
         options={[
@@ -105,38 +102,32 @@ export function EventForm(props: {
           { value: "official", label: m.explore_filterOfficial() },
         ]}
       />
-      <label className="grid gap-1">
-        <span className={fieldLabel()}>{m.eventEditor_starts()}</span>
-        <input
-          type="datetime-local"
-          className={textInput()}
-          value={toInputTime(draft.startsAt)}
-          onChange={(event) => patch({ startsAt: fromInputTime(event.currentTarget.value) })}
-        />
-      </label>
-      <label className="grid gap-1">
-        <span className={fieldLabel()}>{m.eventEditor_ends()}</span>
-        <input
-          type="datetime-local"
-          className={textInput()}
-          value={toInputTime(draft.endsAt)}
-          onChange={(event) => patch({ endsAt: fromInputTime(event.currentTarget.value) })}
-        />
-      </label>
+      <Input
+        label={m.eventEditor_starts()}
+        type="datetime-local"
+        value={toInputTime(draft.startsAt)}
+        onValueChange={(startsAt) => patch({ startsAt: fromInputTime(startsAt) })}
+      />
+      <Input
+        label={m.eventEditor_ends()}
+        type="datetime-local"
+        value={toInputTime(draft.endsAt)}
+        onValueChange={(endsAt) => patch({ endsAt: fromInputTime(endsAt) })}
+      />
       <p className="m-0 text-xs text-text-muted">{m.eventEditor_whenHint()}</p>
-      <label className="grid gap-1">
-        <span className={fieldLabel()}>{m.eventEditor_recurrence()}</span>
-        <select
-          className={selectInput()}
-          value={draft.recurrence || "none"}
-          onChange={(event) => patch({ recurrence: event.currentTarget.value })}
-        >
-          <option value="none">none</option>
-          <option value="daily">daily</option>
-          <option value="weekly">weekly</option>
-          <option value="monthly">monthly</option>
-        </select>
-      </label>
+      <Select
+        label={m.eventEditor_recurrence()}
+        value={draft.recurrence || "none"}
+        onValueChange={(recurrence) =>
+          patch({ recurrence: typeof recurrence === "string" ? recurrence : "none" })
+        }
+        items={[
+          { label: "none", value: "none" },
+          { label: "daily", value: "daily" },
+          { label: "weekly", value: "weekly" },
+          { label: "monthly", value: "monthly" },
+        ]}
+      />
       <TextField
         label={m.eventEditor_price()}
         value={draft.priceHkd}
@@ -166,6 +157,7 @@ export function EventForm(props: {
       <p className="m-0 text-sm font-semibold">{m.eventEditor_ageMode()}</p>
       <RadioGroup
         name="age-mode"
+        aria-label={m.eventEditor_ageMode()}
         value={draft.ageMode}
         onValueChange={(ageMode) => patch({ ageMode: ageMode as EventDraft["ageMode"] })}
         options={[
@@ -176,6 +168,7 @@ export function EventForm(props: {
       <p className="m-0 text-sm font-semibold">{m.eventEditor_joinMode()}</p>
       <RadioGroup
         name="join-mode"
+        aria-label={m.eventEditor_joinMode()}
         value={draft.joinMode}
         onValueChange={(joinMode) => patch({ joinMode: joinMode as EventDraft["joinMode"] })}
         options={[

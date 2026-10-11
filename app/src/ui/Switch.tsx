@@ -1,5 +1,4 @@
-import { Switch } from "@base-ui/react/switch";
-import { switchControl, switchLabel, switchRoot, switchThumb } from "./styles";
+import { Switch } from "@cloudflare/kumo/components/switch";
 
 export function SwitchField(props: {
   checked: boolean;
@@ -8,16 +7,11 @@ export function SwitchField(props: {
   onCheckedChange: (checked: boolean) => void;
 }) {
   return (
-    <label className={switchRoot()}>
-      <Switch.Root
-        checked={props.checked}
-        disabled={props.disabled}
-        onCheckedChange={props.onCheckedChange}
-        className={switchControl()}
-      >
-        <Switch.Thumb className={switchThumb()} />
-      </Switch.Root>
-      <span className={switchLabel()}>{props.label}</span>
-    </label>
+    <Switch
+      checked={props.checked}
+      label={props.label}
+      disabled={props.disabled}
+      onCheckedChange={props.onCheckedChange}
+    />
   );
 }
