@@ -46,3 +46,7 @@ export function sessionToken(): string {
 export function isSignedIn(): boolean {
   return Boolean(sessionToken());
 }
+
+export function viewerId(): string {
+  return useSessionStore.getState().user?.id ?? "";
+}

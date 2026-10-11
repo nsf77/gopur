@@ -1,6 +1,5 @@
-import { m } from "../paraglide/messages.js";
-import { StubPage } from "./StubPage";
+import { ChatListPage } from "../features/chat/ChatListPage";
 
 export function ChatPage() {
-  return <StubPage title={m.chat_title()} message={m.chat_stub()} />;
+  return <ChatListPage />;
 }
