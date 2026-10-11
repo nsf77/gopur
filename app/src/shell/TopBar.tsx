@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, Settings } from "lucide-react";
+import { ArrowLeftIcon, GearIcon } from "@phosphor-icons/react";
 import { Link } from "@tanstack/react-router";
 import { m } from "../paraglide/messages.js";
 import { GopurLogo } from "./GopurLogo";
@@ -16,7 +16,7 @@ export function TopBar(props: { title: string; mode: ReturnType<typeof shellMode
         <div className="flex min-h-11 items-center justify-between">
           <GopurLogo />
           <Link to="/settings" className="flex size-11 items-center justify-center rounded-full" aria-label={m.settings_title()}>
-            <Settings className="size-6" />
+            <GearIcon className="size-6" />
           </Link>
         </div>
       ) : null}
@@ -32,7 +32,7 @@ export function TopBar(props: { title: string; mode: ReturnType<typeof shellMode
             className="flex size-11 items-center justify-center rounded-full md:hidden"
             aria-label={m.settings_title()}
           >
-            <Settings className="size-6" />
+            <GearIcon className="size-6" />
           </Link>
         </div>
       ) : null}
@@ -44,7 +44,7 @@ export function TopBar(props: { title: string; mode: ReturnType<typeof shellMode
             aria-label={m.common_back()}
             onClick={() => (history.length > 1 ? history.back() : void navigate({ to: "/" }))}
           >
-            <ArrowLeft className="size-6" />
+            <ArrowLeftIcon className="size-6" />
           </button>
           <h1 className="m-0 truncate text-lg font-bold tracking-tight">{props.title}</h1>
         </div>

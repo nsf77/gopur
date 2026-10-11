@@ -1,3 +1,5 @@
+@source "../node_modules/@cloudflare/kumo/dist/**/*.{js,jsx,ts,tsx}";
+@import "@cloudflare/kumo/styles/tailwind";
 @import "tailwindcss";
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
@@ -34,6 +36,15 @@
   --glass-saturate: 180%;
 }
 
+/* Gopur blue on Kumo brand / link tokens (Kumo uses data-mode + light-dark()). */
+:root,
+[data-theme="light"] {
+  --color-kumo-brand: #304385;
+  --color-kumo-brand-hover: #3a5099;
+  --text-color-kumo-brand: #304385;
+  --text-color-kumo-link: #253a70;
+}
+
 [data-theme="dark"] {
   color-scheme: dark;
   --color-bg: #000000;
@@ -54,6 +65,10 @@
   --glass-bg: rgb(18 18 18 / 0.55);
   --glass-border: rgb(255 255 255 / 0.14);
   --glass-shadow: 0 8px 32px rgb(0 0 0 / 0.4);
+  --color-kumo-brand: #6f86d6;
+  --color-kumo-brand-hover: #7e94de;
+  --text-color-kumo-brand: #6f86d6;
+  --text-color-kumo-link: #8ba3e8;
 }
 
 :root,
@@ -76,6 +91,10 @@
   :root {
     --shell-sidebar-width: 220px;
   }
+}
+
+#root {
+  isolation: isolate;
 }
 
 .gopur-shell-layout {

@@ -28,15 +28,15 @@ Bun workspace monorepo. Workspaces: `app` (React SPA) and `api` (Hono on Cloudfl
 - Call the API **only** through the Hono RPC client typed from `api`'s `AppType` (`hc`). Validate RPC JSON with **Valibot** on the client. Do not depend on `arktype` in the app.
 - Use `@mobily/ts-belt` in query `select` / mappers and helpers.
 - i18n: Paraglide JS (`@inlang/paraglide-js`), locales `en` and `zh-Hant`.
-- UI: `@base-ui/react` for dialog / tabs / switch / OTP patterns; `class-variance-authority` (`cva`) for Tailwind class variants. Do not add Ark UI or Kobalte.
-- Lucide via `lucide-react` only. Do not import `lucide-solid` or unplugin-icons Solid compilers.
+- UI: `@cloudflare/kumo` (granular `@cloudflare/kumo/components/...`; primitives only when Kumo has no styled equivalent, e.g. OTP). Tailwind v4 `@source` for Kumo dist. Do not add Ark UI, Kobalte, `@base-ui/react`, or `class-variance-authority` in app code.
+- Icons: Phosphor (`@phosphor-icons/react`) everywhere the SPA renders UI. Do not add Lucide.
 
 ## Brand / deploy
 
 - Accent color: `#304385` (Tailwind v4 `@theme`, e.g. `--color-accent`).
 - Tailwind v4 + Apple liquid-glass with Reduce Transparency (`.glass-surface`).
 - App Worker: Vite build → Wrangler static assets (`app/wrangler.toml`, `not_found_handling = "single-page-application"`) for go.pur.run. Keep this assets Worker path.
-- `@cloudflare/kumo` exists as Cloudflare’s React component library (Base UI + Phosphor). It is **not** the SPA deploy toolchain. Official Vite+Workers SPA plugin is `@cloudflare/vite-plugin`; this repo keeps the existing `assets.directory` + `src/worker.ts` deploy so dashboard Builds stay the same.
+- SPA UI is `@cloudflare/kumo` (Cloudflare’s React component library: Base UI + Phosphor). That is **not** the Worker/assets deploy toolchain. Official Vite+Workers SPA plugin is `@cloudflare/vite-plugin`; this repo keeps the existing `assets.directory` + `src/worker.ts` deploy so dashboard Builds stay the same.
 
 ## Checks
 

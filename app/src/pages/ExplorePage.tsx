@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { MagnifyingGlassIcon, SlidersHorizontalIcon } from "@phosphor-icons/react";
+import { Button } from "@cloudflare/kumo/components/button";
+import { Checkbox } from "@cloudflare/kumo/components/checkbox";
+import { InputGroup } from "@cloudflare/kumo/components/input-group";
 import { feedEventsFromPages, useOrganizers, useSearchEvents } from "../lib/queries";
 import { m } from "../paraglide/messages.js";
 import { EventCard } from "../features/feed/EventCard";
@@ -40,23 +43,27 @@ export function ExplorePage() {
           void setQ(draft || null);
         }}
       >
-        <label className="glass-surface flex min-h-11 flex-1 items-center gap-2 rounded-pill px-3">
-          <Search className="size-5 text-text-muted" />
-          <input
-            className="min-h-11 w-full bg-transparent outline-none"
-            placeholder={m.explore_searchPlaceholder()}
-            value={draft}
-            onChange={(event) => setDraft(event.currentTarget.value)}
-          />
-        </label>
-        <button
+        <div className="glass-surface min-h-11 flex-1 overflow-hidden rounded-pill">
+          <InputGroup.Root className="w-full border-0 bg-transparent shadow-none">
+            <InputGroup.Addon>
+              <MagnifyingGlassIcon className="size-5 text-text-muted" />
+            </InputGroup.Addon>
+            <InputGroup.Input
+              aria-label={m.explore_searchPlaceholder()}
+              placeholder={m.explore_searchPlaceholder()}
+              value={draft}
+              onValueChange={setDraft}
+            />
+          </InputGroup.Root>
+        </div>
+        <Button
           type="button"
-          className="flex size-11 items-center justify-center rounded-full"
+          variant="ghost"
+          shape="circle"
           aria-label={m.explore_filters()}
           onClick={() => setFilterOpen(true)}
-        >
-          <SlidersHorizontal className="size-5" />
-        </button>
+          icon={<SlidersHorizontalIcon className="size-5" />}
+        />
       </form>
       <Tabs
         aria-label={m.tabs_explore()}
@@ -123,14 +130,11 @@ export function ExplorePage() {
         ]}
       />
       <Sheet open={filterOpen} title={m.explore_filters()} onOpenChange={setFilterOpen}>
-        <label className="flex min-h-11 items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={weekend === "1"}
-            onChange={(event) => void setWeekend(event.currentTarget.checked ? "1" : null)}
-          />
-          {m.explore_weekend()}
-        </label>
+        <Checkbox
+          label={m.explore_weekend()}
+          checked={weekend === "1"}
+          onCheckedChange={(checked) => void setWeekend(checked === true ? "1" : null)}
+        />
         <button
           type="button"
           className="mt-2 text-sm font-semibold text-accent"

@@ -1,6 +1,4 @@
-import { Radio } from "@base-ui/react/radio";
-import { RadioGroup as BaseRadioGroup } from "@base-ui/react/radio-group";
-import { radioControl, radioGroup, radioIndicator, radioRow } from "./styles";
+import { Radio } from "@cloudflare/kumo/components/radio";
 
 export function RadioGroup(props: {
   value: string;
@@ -10,23 +8,15 @@ export function RadioGroup(props: {
   onValueChange: (value: string) => void;
 }) {
   return (
-    <BaseRadioGroup
-      value={props.value}
+    <Radio.Group
       name={props.name}
-      aria-label={props["aria-label"]}
-      onValueChange={(value) => {
-        if (typeof value === "string") props.onValueChange(value);
-      }}
-      className={radioGroup()}
+      value={props.value}
+      legend={props["aria-label"]}
+      onValueChange={props.onValueChange}
     >
       {props.options.map((option) => (
-        <label key={option.value} className={radioRow()}>
-          <Radio.Root value={option.value} className={radioControl()}>
-            <Radio.Indicator className={radioIndicator()} />
-          </Radio.Root>
-          {option.label}
-        </label>
+        <Radio.Item key={option.value} value={option.value} label={option.label} />
       ))}
-    </BaseRadioGroup>
+    </Radio.Group>
   );
 }

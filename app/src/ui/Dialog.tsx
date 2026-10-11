@@ -1,15 +1,8 @@
 import type { ReactNode } from "react";
-import { Dialog } from "@base-ui/react/dialog";
+import { Button } from "@cloudflare/kumo/components/button";
+import { Dialog } from "@cloudflare/kumo/components/dialog";
+import { LayerDialog } from "@cloudflare/kumo/components/layer-dialog";
 import { m } from "../paraglide/messages.js";
-import {
-  button,
-  dialogActions,
-  dialogContent,
-  dialogDescription,
-  dialogHandle,
-  dialogOverlay,
-  dialogTitle,
-} from "./styles";
 
 export function ConfirmDialog(props: {
   open: boolean;
@@ -22,21 +15,22 @@ export function ConfirmDialog(props: {
 }) {
   return (
     <Dialog.Root open={props.open} onOpenChange={props.onOpenChange}>
-      <Dialog.Portal>
-        <Dialog.Backdrop className={dialogOverlay()} />
-        <Dialog.Popup className={dialogContent({ placement: "dialog" })}>
-          <Dialog.Title className={dialogTitle()}>{props.title}</Dialog.Title>
-          <Dialog.Description className={dialogDescription()}>{props.children}</Dialog.Description>
-          <div className={dialogActions()}>
-            <Dialog.Close className={button({ variant: "secondary", width: "grow" })}>
-              {props.cancelLabel}
-            </Dialog.Close>
-            <button type="button" className={button({ variant: "primary", width: "grow" })} onClick={props.onConfirm}>
-              {props.confirmLabel}
-            </button>
-          </div>
-        </Dialog.Popup>
-      </Dialog.Portal>
+      <Dialog className="p-6">
+        <Dialog.Title className="mb-3 text-lg font-bold">{props.title}</Dialog.Title>
+        <Dialog.Description className="m-0 text-sm text-kumo-subtle">{props.children}</Dialog.Description>
+        <div className="mt-4 flex gap-2">
+          <Dialog.Close
+            render={(closeProps) => (
+              <Button variant="secondary" className="flex-1" {...closeProps}>
+                {props.cancelLabel}
+              </Button>
+            )}
+          />
+          <Button variant="primary" className="flex-1" onClick={props.onConfirm}>
+            {props.confirmLabel}
+          </Button>
+        </div>
+      </Dialog>
     </Dialog.Root>
   );
 }
@@ -48,18 +42,16 @@ export function Sheet(props: {
   onOpenChange: (open: boolean) => void;
 }) {
   return (
-    <Dialog.Root open={props.open} onOpenChange={props.onOpenChange}>
-      <Dialog.Portal>
-        <Dialog.Backdrop className={dialogOverlay()} />
-        <Dialog.Popup className={dialogContent({ placement: "sheet" })}>
-          <div className={dialogHandle()} aria-hidden="true" />
-          <Dialog.Title className={dialogTitle()}>{props.title}</Dialog.Title>
-          {props.children}
-          <Dialog.Close className={button({ variant: "primary", width: "full", class: "mt-4" })}>
+    <LayerDialog.Root open={props.open} onOpenChange={props.onOpenChange}>
+      <LayerDialog.Content closeLabel={m.common_done()}>
+        <LayerDialog.Title>{props.title}</LayerDialog.Title>
+        <LayerDialog.Body>{props.children}</LayerDialog.Body>
+        <LayerDialog.Actions dismissLabel={m.common_back()}>
+          <LayerDialog.Actions.Primary onClick={() => props.onOpenChange(false)}>
             {m.common_done()}
-          </Dialog.Close>
-        </Dialog.Popup>
-      </Dialog.Portal>
-    </Dialog.Root>
+          </LayerDialog.Actions.Primary>
+        </LayerDialog.Actions>
+      </LayerDialog.Content>
+    </LayerDialog.Root>
   );
 }

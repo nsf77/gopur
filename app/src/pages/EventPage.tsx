@@ -1,5 +1,5 @@
-import { ExternalLink } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Link } from "@cloudflare/kumo/components/link";
+import { Link as RouterLink } from "@tanstack/react-router";
 import { canEditEvent } from "../lib/access";
 import { G, O, pipe } from "../lib/belt";
 import { eventImageUrls, eventText, formatEventWhen, formatHkdDollars } from "../lib/event-text";
@@ -65,9 +65,13 @@ export function EventPage({ id }: { id: string }) {
       </div>
       <h1 className="m-0 mb-2 text-[28px] font-extrabold leading-tight tracking-tight">{title}</h1>
       {canEditEvent(user, ev) ? (
-        <Link to="/event/$id/edit" params={{ id: ev.id }} className="mb-2 inline-block text-sm font-semibold text-accent no-underline">
+        <RouterLink
+          to="/event/$id/edit"
+          params={{ id: ev.id }}
+          className="mb-2 inline-block text-sm font-semibold text-accent no-underline"
+        >
           {m.eventEditor_editTitle()}
-        </Link>
+        </RouterLink>
       ) : null}
       <EventActionRow event={ev} loginNext={`/event/${ev.id}`} />
       <p className="mt-2 text-sm text-text-muted">{price}</p>
@@ -99,15 +103,15 @@ export function EventPage({ id }: { id: string }) {
         </>
       ) : null}
       {G.isString(ev.source_url) && ev.source_url ? (
-        <a
-          className="mt-6 inline-flex min-h-11 items-center gap-2 font-semibold text-accent no-underline"
+        <Link
+          className="mt-6 inline-flex min-h-11 items-center gap-2 font-semibold"
           href={ev.source_url}
           target="_blank"
           rel="noreferrer"
         >
           {m.event_viewSource()}
-          <ExternalLink className="size-4" />
-        </a>
+          <Link.ExternalIcon />
+        </Link>
       ) : null}
     </main>
   );
