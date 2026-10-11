@@ -49,11 +49,15 @@ const eventRoute = createRoute({
   },
 });
 
+function stringSearch(value: unknown): string | undefined {
+  return typeof value === "string" && value.length > 0 ? value : undefined;
+}
+
 const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/login",
   validateSearch: (search: Record<string, unknown>): { next?: string } => ({
-    next: typeof search.next === "string" ? search.next : undefined,
+    next: stringSearch(search.next),
   }),
   component: function LoginRoute() {
     const { next } = loginRoute.useSearch();
@@ -64,9 +68,9 @@ const loginRoute = createRoute({
 const loginVerifyRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/login/verify",
-  validateSearch: (search: Record<string, unknown>): { email: string; next?: string } => ({
-    email: typeof search.email === "string" ? search.email : "",
-    next: typeof search.next === "string" ? search.next : undefined,
+  validateSearch: (search: Record<string, unknown>): { email?: string; next?: string } => ({
+    email: stringSearch(search.email),
+    next: stringSearch(search.next),
   }),
   component: function LoginVerifyRoute() {
     const { email, next } = loginVerifyRoute.useSearch();

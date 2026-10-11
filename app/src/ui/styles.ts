@@ -63,11 +63,41 @@ export const switchThumb = cva(
 );
 export const switchLabel = cva("text-sm font-medium");
 
+export const fieldRoot = cva("grid gap-1");
+export const fieldLabel = cva("text-sm font-medium");
+export const fieldError = cva("m-0 text-sm text-accent");
+
+export const textInput = cva(
+  "min-h-11 w-full rounded-md border bg-surface px-3 text-base outline-none data-focused:border-accent",
+  {
+    variants: {
+      invalid: {
+        true: "border-accent",
+        false: "border-divider",
+      },
+    },
+    defaultVariants: {
+      invalid: false,
+    },
+  },
+);
+
 export const otpRoot = cva("grid gap-1");
 export const otpLabel = cva("text-sm font-medium");
 export const otpSlots = cva("flex gap-2");
 export const otpInput = cva(
-  "flex size-11 items-center justify-center rounded-md border border-divider bg-surface text-center text-lg font-semibold tabular-nums outline-none data-focused:border-accent",
+  "flex size-11 items-center justify-center rounded-md border bg-surface text-center text-lg font-semibold tabular-nums outline-none data-focused:border-accent",
+  {
+    variants: {
+      invalid: {
+        true: "border-accent",
+        false: "border-divider",
+      },
+    },
+    defaultVariants: {
+      invalid: false,
+    },
+  },
 );
 
 export const avatar = cva("inline-flex shrink-0 overflow-hidden rounded-full", {

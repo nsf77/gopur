@@ -1,13 +1,19 @@
 import { hc } from "hono/client";
 import type { AppType } from "api";
 import {
+  parseAuthResponse,
+  parseErrorBody,
   parseEvent,
   parseEventPage,
   parseHealthz,
   parseLikeState,
+  parseMessageResponse,
   parseOrganizerDirectory,
   parseSaveState,
   parseShareState,
+  parseUser,
+  type AuthResponse,
+  type ErrorBody,
   type Event,
   type EventPage,
   type Healthz,
@@ -15,17 +21,28 @@ import {
   type OrganizerDirectory,
   type SaveState,
   type ShareState,
+  type User,
 } from "./schemas";
-import { sessionToken } from "../stores/session";
+import { sessionToken, useSessionStore } from "../stores/session";
 
 export class ApiError extends Error {
   readonly status: number;
   readonly body: string;
+  readonly payload: ErrorBody | null;
 
   constructor(status: number, body: string) {
     super(body || `request failed ${status}`);
     this.status = status;
     this.body = body;
+    this.payload = parseJsonError(body);
+  }
+}
+
+function parseJsonError(body: string): ErrorBody | null {
+  try {
+    return parseErrorBody(JSON.parse(body) as unknown);
+  } catch {
+    return null;
   }
 }
 
@@ -38,7 +55,10 @@ export function createApiClient(token = "", fetchImpl: typeof fetch = fetch): Ap
     fetch: (input: RequestInfo | URL, init?: RequestInit) => {
       const headers = new Headers(init?.headers);
       if (token) headers.set("Authorization", `Bearer ${token}`);
-      return fetchImpl(input, { ...init, headers });
+      return fetchImpl(input, { ...init, headers }).then((res) => {
+        if (token && res.status === 401) useSessionStore.getState().signOut();
+        return res;
+      });
     },
   });
 }
@@ -102,6 +122,24 @@ export async function unsaveEvent(id: string): Promise<SaveState> {
 
 export async function shareEvent(id: string): Promise<ShareState> {
   return parseShareState(await readJson(await api().events[":id"].share.$post({ param: { id } })));
+}
+
+export async function startEmailOtp(email: string): Promise<void> {
+  parseMessageResponse(await readJson(await api().auth.email.start.$post({ json: { email } })));
+}
+
+export async function verifyEmailOtp(email: string, code: string, birthdate?: string): Promise<AuthResponse> {
+  return parseAuthResponse(
+    await readJson(
+      await api().auth.email.verify.$post({
+        json: birthdate ? { email, code, birthdate } : { email, code },
+      }),
+    ),
+  );
+}
+
+export async function fetchMe(): Promise<User> {
+  return parseUser(await readJson(await api().me.$get()));
 }
 
 export function apiBase(): string {
