@@ -3,7 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { m } from "../paraglide/messages.js";
 import { Button } from "../ui/Button";
 
-export function LoginPage() {
+export function LoginPage({ next }: { next?: string }) {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
 
@@ -15,7 +15,7 @@ export function LoginPage() {
         className="grid gap-3"
         onSubmit={(event) => {
           event.preventDefault();
-          void navigate({ to: "/login/verify", search: { email } });
+          void navigate({ to: "/login/verify", search: { email, next } });
         }}
       >
         <label className="grid gap-1 text-sm font-medium">

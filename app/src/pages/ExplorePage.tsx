@@ -1,15 +1,35 @@
 import { useState } from "react";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
-import { Search } from "lucide-react";
+import { Search, SlidersHorizontal } from "lucide-react";
+import { feedEventsFromPages, useOrganizers, useSearchEvents } from "../lib/queries";
 import { m } from "../paraglide/messages.js";
+import { EventCard } from "../features/feed/EventCard";
+import { Sheet } from "../ui/Dialog";
+import { InfiniteSentinel } from "../ui/InfiniteSentinel";
+import { StatusMessage } from "../ui/StatusMessage";
 import { Tabs } from "../ui/Tabs";
 
 const tabParser = parseAsStringLiteral(["events", "people"] as const).withDefault("events");
+const weekendParser = parseAsStringLiteral(["1"] as const);
 
 export function ExplorePage() {
   const [q, setQ] = useQueryState("q", parseAsString.withDefault(""));
   const [tab, setTab] = useQueryState("tab", tabParser);
+  const [weekend, setWeekend] = useQueryState("weekend", weekendParser);
+  const [type, setType] = useQueryState("type", parseAsString.withDefault(""));
   const [draft, setDraft] = useState(q);
+  const [filterOpen, setFilterOpen] = useState(false);
+
+  const trimmed = q.trim();
+  const tooShort = trimmed.length > 0 && [...trimmed].length < 2;
+  const searchParams = {
+    q: trimmed || undefined,
+    type: type || undefined,
+    weekend: weekend === "1" ? "1" : undefined,
+  };
+  const search = useSearchEvents(searchParams, tab === "events" && !tooShort);
+  const events = feedEventsFromPages(search.data?.pages);
+  const organizers = useOrganizers(trimmed, tab === "people");
 
   return (
     <main className="pb-4">
@@ -29,6 +49,14 @@ export function ExplorePage() {
             onChange={(event) => setDraft(event.currentTarget.value)}
           />
         </label>
+        <button
+          type="button"
+          className="flex size-11 items-center justify-center rounded-full"
+          aria-label={m.explore_filters()}
+          onClick={() => setFilterOpen(true)}
+        >
+          <SlidersHorizontal className="size-5" />
+        </button>
       </form>
       <Tabs
         aria-label={m.tabs_explore()}
@@ -39,18 +67,82 @@ export function ExplorePage() {
             value: "events",
             label: m.explore_tabEvents(),
             content: (
-              <p className="px-4 text-sm text-text-muted">
-                {m.explore_stub()} {q ? `"${q}"` : ""}
-              </p>
+              <div>
+                {tooShort ? <StatusMessage kind="empty" message={m.explore_tooShort()} /> : null}
+                {!tooShort && search.isPending && events.length === 0 ? (
+                  <p className="p-4 text-sm text-text-muted">{m.common_loading()}</p>
+                ) : null}
+                {!tooShort && search.isError && events.length === 0 ? (
+                  <StatusMessage kind="error" message={m.common_error()} onRetry={() => void search.refetch()} />
+                ) : null}
+                {!tooShort && search.isSuccess && events.length === 0 ? (
+                  <StatusMessage kind="empty" message={m.explore_empty()} />
+                ) : null}
+                {events.map((event) => (
+                  <EventCard key={event.id} event={event} />
+                ))}
+                <InfiniteSentinel
+                  hasNextPage={Boolean(search.hasNextPage)}
+                  isFetchingNextPage={search.isFetchingNextPage}
+                  onLoadMore={() => void search.fetchNextPage()}
+                />
+              </div>
             ),
           },
           {
             value: "people",
             label: m.explore_tabPeople(),
-            content: <p className="px-4 text-sm text-text-muted">{m.explore_stub()}</p>,
+            content: (
+              <div className="px-4">
+                {organizers.isPending ? <p className="text-sm text-text-muted">{m.common_loading()}</p> : null}
+                {organizers.isError ? (
+                  <StatusMessage kind="error" message={m.common_error()} onRetry={() => void organizers.refetch()} />
+                ) : null}
+                {organizers.isSuccess &&
+                (organizers.data.organizers.length ?? 0) === 0 &&
+                (organizers.data.sources.length ?? 0) === 0 ? (
+                  <StatusMessage kind="empty" message={m.explore_peopleEmpty()} />
+                ) : null}
+                {organizers.data?.organizers.map((org) => (
+                  <div
+                    key={org.key}
+                    className="flex min-h-11 items-center justify-between border-b border-divider py-3"
+                  >
+                    <span className="font-semibold">{org.name}</span>
+                    <span className="text-xs text-text-muted">{m.explore_upcomingCount({ count: org.upcoming_count })}</span>
+                  </div>
+                ))}
+                {organizers.data?.sources.map((src) => (
+                  <div key={src.id} className="flex min-h-11 items-center border-b border-divider py-3">
+                    {src.display_name ?? src.username ?? src.id}
+                  </div>
+                ))}
+              </div>
+            ),
           },
         ]}
       />
+      <Sheet open={filterOpen} title={m.explore_filters()} onOpenChange={setFilterOpen}>
+        <label className="flex min-h-11 items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={weekend === "1"}
+            onChange={(event) => void setWeekend(event.currentTarget.checked ? "1" : null)}
+          />
+          {m.explore_weekend()}
+        </label>
+        <button
+          type="button"
+          className="mt-2 text-sm font-semibold text-accent"
+          onClick={() => {
+            void setWeekend(null);
+            void setType(null);
+            setFilterOpen(false);
+          }}
+        >
+          {m.explore_reset()}
+        </button>
+      </Sheet>
     </main>
   );
 }

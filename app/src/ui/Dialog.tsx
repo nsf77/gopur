@@ -1,6 +1,15 @@
 import type { ReactNode } from "react";
 import { Dialog } from "@base-ui/react/dialog";
-import { button, dialogActions, dialogContent, dialogDescription, dialogOverlay, dialogTitle } from "./styles";
+import { m } from "../paraglide/messages.js";
+import {
+  button,
+  dialogActions,
+  dialogContent,
+  dialogDescription,
+  dialogHandle,
+  dialogOverlay,
+  dialogTitle,
+} from "./styles";
 
 export function ConfirmDialog(props: {
   open: boolean;
@@ -26,6 +35,29 @@ export function ConfirmDialog(props: {
               {props.confirmLabel}
             </button>
           </div>
+        </Dialog.Popup>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+}
+
+export function Sheet(props: {
+  open: boolean;
+  title: string;
+  children: ReactNode;
+  onOpenChange: (open: boolean) => void;
+}) {
+  return (
+    <Dialog.Root open={props.open} onOpenChange={props.onOpenChange}>
+      <Dialog.Portal>
+        <Dialog.Backdrop className={dialogOverlay()} />
+        <Dialog.Popup className={dialogContent({ placement: "sheet" })}>
+          <div className={dialogHandle()} aria-hidden="true" />
+          <Dialog.Title className={dialogTitle()}>{props.title}</Dialog.Title>
+          {props.children}
+          <Dialog.Close className={button({ variant: "primary", width: "full", class: "mt-4" })}>
+            {m.common_done()}
+          </Dialog.Close>
         </Dialog.Popup>
       </Dialog.Portal>
     </Dialog.Root>
