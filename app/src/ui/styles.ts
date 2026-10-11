@@ -70,6 +70,19 @@ export const otpInput = cva(
   "flex size-11 items-center justify-center rounded-md border border-divider bg-surface text-center text-lg font-semibold tabular-nums outline-none data-focused:border-accent",
 );
 
+export const avatar = cva("inline-flex shrink-0 overflow-hidden rounded-full", {
+  variants: {
+    size: {
+      sm: "size-8 text-xs",
+      md: "size-10 text-sm",
+      lg: "size-14 text-base",
+    },
+  },
+  defaultVariants: {
+    size: "md",
+  },
+});
+
 export const statusMessage = cva("grid gap-2 p-4 text-sm", {
   variants: {
     kind: {

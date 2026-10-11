@@ -52,18 +52,25 @@ const eventRoute = createRoute({
 const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/login",
-  component: LoginPage,
+  validateSearch: (search: Record<string, unknown>): { next?: string } => ({
+    next: typeof search.next === "string" ? search.next : undefined,
+  }),
+  component: function LoginRoute() {
+    const { next } = loginRoute.useSearch();
+    return <LoginPage next={next} />;
+  },
 });
 
 const loginVerifyRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/login/verify",
-  validateSearch: (search: Record<string, unknown>): { email: string } => ({
+  validateSearch: (search: Record<string, unknown>): { email: string; next?: string } => ({
     email: typeof search.email === "string" ? search.email : "",
+    next: typeof search.next === "string" ? search.next : undefined,
   }),
   component: function LoginVerifyRoute() {
-    const { email } = loginVerifyRoute.useSearch();
-    return <LoginVerifyPage email={email} />;
+    const { email, next } = loginVerifyRoute.useSearch();
+    return <LoginVerifyPage email={email} next={next} />;
   },
 });
 

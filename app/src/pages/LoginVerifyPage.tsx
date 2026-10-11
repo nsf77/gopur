@@ -1,11 +1,12 @@
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useRouter } from "@tanstack/react-router";
 import { m } from "../paraglide/messages.js";
 import { useSessionStore } from "../stores/session";
 import { Button } from "../ui/Button";
 import { OtpField } from "../ui/OtpField";
 
-export function LoginVerifyPage({ email }: { email: string }) {
+export function LoginVerifyPage({ email, next }: { email: string; next?: string }) {
   const navigate = useNavigate();
+  const router = useRouter();
   const setSession = useSessionStore((s) => s.setSession);
 
   return (
@@ -35,7 +36,8 @@ export function LoginVerifyPage({ email }: { email: string }) {
               role: "user",
               email: email || "stub@gopur.local",
             });
-            void navigate({ to: "/profile" });
+            if (next?.startsWith("/")) router.history.push(next);
+            else void navigate({ to: "/profile" });
           }}
         />
         <Button type="submit">{m.auth_verifyButton()}</Button>

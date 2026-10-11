@@ -6,7 +6,7 @@ Bun workspace monorepo for the Gopur SPA (`app/`) and Cloudflare Workers API (`a
 
 - Workspaces: `app`, `api`
 - `api`: Hono on Workers, ArkType, D1 (HKG `gopur`) + KV `GOPUR_AUTH` + Durable Object `CHAT_HUB`
-- `app`: React 19 SPA (React Compiler) — TanStack Router stubs for `/`, `/explore`, `/event/:id`, `/login`, `/login/verify`, `/chat`, `/my-events`, `/settings`, `/notifications`, `/profile`. Hono RPC (`hc` + `AppType`) + TanStack Query; Valibot parses client payloads. Zustand session stub. nuqs on explore search. Paraglide JS `en` + `zh-Hant`.
+- `app`: React 19 SPA (React Compiler) — Home feed (`/`, infinite scroll), Explore (`/explore`, nuqs search/filters), Event detail (`/event/:id` with like/save/share). Other routes (`/login`, `/chat`, `/my-events`, `/settings`, `/notifications`, `/profile`) remain scaffold. Hono RPC (`hc` + `AppType`) + TanStack Query; Valibot parses client payloads. Zustand session. Paraglide JS `en` + `zh-Hant`.
 - UI: `@base-ui/react` (behavior) + `class-variance-authority` (class variants), Tailwind v4, liquid-glass with Reduce Transparency, accent `#304385`, Lucide (`lucide-react`)
 - Lists: `GET /me/events`, `/me/saved`, `/me/likes`, `/users/:id/events` (API; UI later)
 - Notifications: D1 inbox + `GET /notifications` (API; UI later)
