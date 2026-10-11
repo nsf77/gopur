@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
+import { PlusIcon } from "@phosphor-icons/react";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
 import { canCreateEvents } from "../lib/access";
 import { useLikedEvents, useMyEvents, useSavedEvents } from "../lib/queries";
@@ -49,7 +49,7 @@ export function MyEventsPage() {
             aria-label={m.myEvents_create()}
             data-testid="create-event"
           >
-            <Plus className="size-5" />
+            <PlusIcon className="size-5" />
           </Link>
         ) : null}
       </header>

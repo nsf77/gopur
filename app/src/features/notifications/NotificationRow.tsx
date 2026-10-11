@@ -1,15 +1,21 @@
-import { BadgeCheck, CalendarClock, CalendarSync, UserCheck, Users } from "lucide-react";
+import {
+  ArrowsClockwiseIcon,
+  CalendarDotsIcon,
+  SealCheckIcon,
+  UserCheckIcon,
+  UsersIcon,
+} from "@phosphor-icons/react";
 import { formatEventWhen } from "../../lib/event-text";
 import type { Notification } from "../../lib/schemas";
 import { getLocale } from "../../paraglide/runtime.js";
 
 function CategoryIcon(props: { category: string }) {
   const className = "mt-0.5 size-5 shrink-0 text-accent";
-  if (props.category === "joins") return <UserCheck className={className} aria-hidden="true" />;
-  if (props.category === "event_updates") return <CalendarSync className={className} aria-hidden="true" />;
-  if (props.category === "social") return <Users className={className} aria-hidden="true" />;
-  if (props.category === "verification") return <BadgeCheck className={className} aria-hidden="true" />;
-  return <CalendarClock className={className} aria-hidden="true" />;
+  if (props.category === "joins") return <UserCheckIcon className={className} aria-hidden="true" />;
+  if (props.category === "event_updates") return <ArrowsClockwiseIcon className={className} aria-hidden="true" />;
+  if (props.category === "social") return <UsersIcon className={className} aria-hidden="true" />;
+  if (props.category === "verification") return <SealCheckIcon className={className} aria-hidden="true" />;
+  return <CalendarDotsIcon className={className} aria-hidden="true" />;
 }
 
 export function NotificationRow(props: { item: Notification; onSelect: () => void }) {

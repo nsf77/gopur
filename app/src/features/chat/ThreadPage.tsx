@@ -1,14 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
-import { Send } from "lucide-react";
+import { PaperPlaneTiltIcon } from "@phosphor-icons/react";
 import { A, O, pipe } from "../../lib/belt";
 import { m } from "../../paraglide/messages.js";
 import { useChatChrome } from "../../stores/chat-chrome";
 import { useSessionStore, viewerId } from "../../stores/session";
 import { Button } from "../../ui/Button";
 import { StatusMessage } from "../../ui/StatusMessage";
-import { button, chatBubble } from "../../ui/styles";
 import { acceptConversation, fetchConversation, fetchMessages } from "./api";
 import { conversationTitle } from "./display";
 import { setOpenThreadId } from "./envelopes";
@@ -114,9 +112,9 @@ export function ThreadPage({ id }: { id: string }) {
     return (
       <main className="grid gap-4 p-4">
         <p className="m-0 text-sm text-text-muted">{m.chat_signInRequired()}</p>
-        <Link to="/login" search={{ next: `/chat/${id}` }} className={button()}>
+        <Button to="/login" search={{ next: `/chat/${id}` }}>
           {m.common_signIn()}
-        </Link>
+        </Button>
       </main>
     );
   }
@@ -161,7 +159,11 @@ export function ThreadPage({ id }: { id: string }) {
           const mine = message.sender_id === mineId;
           return (
             <article key={message.id} className={`flex flex-col gap-1 ${mine ? "items-end" : "items-start"}`}>
-              <div className={chatBubble({ mine })}>
+              <div
+                className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap ${
+                  mine ? "bg-accent text-accent-contrast" : "bg-surface-elevated text-text"
+                }`}
+              >
                 {message.unsent_at ? (
                   <p className="m-0 italic opacity-80">{m.chat_unsent()}</p>
                 ) : message.kind === "photo" && message.image_url ? (
@@ -192,7 +194,7 @@ export function ThreadPage({ id }: { id: string }) {
           onChange={(event) => setText(event.currentTarget.value)}
         />
         <Button type="submit" disabled={pending || sending} aria-label={m.chat_send()}>
-          <Send className="size-5" />
+          <PaperPlaneTiltIcon className="size-5" />
         </Button>
       </form>
     </main>
