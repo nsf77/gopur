@@ -35,3 +35,27 @@ export function TextField(props: {
     </Field.Root>
   );
 }
+
+export function TextAreaField(props: {
+  label: string;
+  value: string;
+  name?: string;
+  disabled?: boolean;
+  invalid?: boolean;
+  error?: string;
+  onValueChange: (value: string) => void;
+}) {
+  return (
+    <Field.Root name={props.name} disabled={props.disabled} invalid={props.invalid} className={fieldRoot()}>
+      <Field.Label className={fieldLabel()}>{props.label}</Field.Label>
+      <textarea
+        className={textInput({ invalid: Boolean(props.invalid), multiline: true })}
+        name={props.name}
+        value={props.value}
+        disabled={props.disabled}
+        onChange={(event) => props.onValueChange(event.currentTarget.value)}
+      />
+      {props.error ? <Field.Error className={fieldError()}>{props.error}</Field.Error> : null}
+    </Field.Root>
+  );
+}

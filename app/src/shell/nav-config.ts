@@ -38,25 +38,38 @@ export function isNavItemActive(pathname: string, item: Pick<NavItem, "href">): 
 export function shellMode(pathname: string): "home" | "explore" | "detail" | "primary" {
   if (pathname === "/") return "home";
   if (pathname === "/explore" || pathname.startsWith("/explore/")) return "explore";
-  if (pathname.startsWith("/event/") || pathname.startsWith("/login") || pathname.startsWith("/chat/")) {
+  if (
+    pathname.startsWith("/event/") ||
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/chat/") ||
+    pathname === "/profile/edit"
+  ) {
     return "detail";
   }
   return "primary";
 }
 
 export function hideTabBar(pathname: string): boolean {
-  return pathname.startsWith("/event/") || pathname.startsWith("/login") || pathname.startsWith("/chat/");
+  return (
+    pathname.startsWith("/event/") ||
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/chat/") ||
+    pathname === "/profile/edit"
+  );
 }
 
 export function titleFor(pathname: string): string {
   if (pathname === "/") return m.home_title();
   if (pathname.startsWith("/explore")) return m.tabs_explore();
+  if (pathname === "/profile/edit") return m.profileEdit_edit();
   if (pathname.startsWith("/profile")) return m.profile_title();
   if (pathname.startsWith("/settings")) return m.settings_title();
   if (pathname.startsWith("/login")) return m.auth_welcome();
   if (pathname.startsWith("/chat")) return m.tabs_chat();
   if (pathname.startsWith("/my-events")) return m.tabs_myEvents();
   if (pathname.startsWith("/notifications")) return m.notifications_title();
+  if (pathname === "/event/new") return m.eventEditor_createTitle();
+  if (pathname.endsWith("/edit") && pathname.startsWith("/event/")) return m.eventEditor_editTitle();
   if (pathname.startsWith("/event/")) return m.event_title();
   return "Gopur";
 }

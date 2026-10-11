@@ -1,9 +1,12 @@
 import { ExternalLink } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { canEditEvent } from "../lib/access";
 import { G, O, pipe } from "../lib/belt";
 import { eventImageUrls, eventText, formatEventWhen, formatHkdDollars } from "../lib/event-text";
 import { isNotFound, useEvent } from "../lib/queries";
 import { getLocale } from "../paraglide/runtime.js";
 import { m } from "../paraglide/messages.js";
+import { useSessionStore } from "../stores/session";
 import { EventActionRow } from "../features/viewer/EventActionRow";
 import { Avatar } from "../ui/Avatar";
 import { StatusMessage } from "../ui/StatusMessage";
@@ -11,6 +14,7 @@ import { StatusMessage } from "../ui/StatusMessage";
 export function EventPage({ id }: { id: string }) {
   const query = useEvent(id);
   const loc = getLocale();
+  const user = useSessionStore((s) => s.user);
   const ev = query.data;
 
   if (isNotFound(query.error)) {
@@ -60,6 +64,11 @@ export function EventPage({ id }: { id: string }) {
         )}
       </div>
       <h1 className="m-0 mb-2 text-[28px] font-extrabold leading-tight tracking-tight">{title}</h1>
+      {canEditEvent(user, ev) ? (
+        <Link to="/event/$id/edit" params={{ id: ev.id }} className="mb-2 inline-block text-sm font-semibold text-accent no-underline">
+          {m.eventEditor_editTitle()}
+        </Link>
+      ) : null}
       <EventActionRow event={ev} loginNext={`/event/${ev.id}`} />
       <p className="mt-2 text-sm text-text-muted">{price}</p>
       <p className="mt-1 text-sm text-text-muted">{ev.date_tbc ? m.event_dateTbc() : formatEventWhen(ev.start_at, loc)}</p>

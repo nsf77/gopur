@@ -10,17 +10,19 @@ export function Button({
   className,
   children,
   to,
+  search,
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant;
   width?: ButtonVariants["width"];
   children: ReactNode;
   to?: LinkProps["to"];
+  search?: LinkProps["search"];
 }) {
   const cls = button({ variant, width, class: className });
   if (to) {
     return (
-      <Link to={to} className={cls}>
+      <Link to={to} search={search} className={cls}>
         {children}
       </Link>
     );

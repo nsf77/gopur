@@ -5,13 +5,16 @@ import { queryClient } from "./lib/query";
 import { AppShell } from "./shell/AppShell";
 import { ChatPage } from "./pages/ChatPage";
 import { ChatThreadPage } from "./pages/ChatThreadPage";
+import { EditEventPage } from "./pages/EditEventPage";
 import { EventPage } from "./pages/EventPage";
 import { ExplorePage } from "./pages/ExplorePage";
 import { HomePage } from "./pages/HomePage";
 import { LoginPage } from "./pages/LoginPage";
 import { LoginVerifyPage } from "./pages/LoginVerifyPage";
 import { MyEventsPage } from "./pages/MyEventsPage";
+import { NewEventPage } from "./pages/NewEventPage";
 import { NotificationsPage } from "./pages/NotificationsPage";
+import { ProfileEditPage } from "./pages/ProfileEditPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { SettingsPage } from "./pages/SettingsPage";
 
@@ -41,12 +44,27 @@ const exploreRoute = createRoute({
   component: ExplorePage,
 });
 
+const eventNewRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/event/new",
+  component: NewEventPage,
+});
+
 const eventRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/event/$id",
   component: function EventRoute() {
     const { id } = eventRoute.useParams();
     return <EventPage id={id} />;
+  },
+});
+
+const eventEditRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/event/$id/edit",
+  component: function EventEditRoute() {
+    const { id } = eventEditRoute.useParams();
+    return <EditEventPage id={id} />;
   },
 });
 
@@ -118,10 +136,18 @@ const profileRoute = createRoute({
   component: ProfilePage,
 });
 
+const profileEditRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/profile/edit",
+  component: ProfileEditPage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   exploreRoute,
+  eventNewRoute,
   eventRoute,
+  eventEditRoute,
   loginRoute,
   loginVerifyRoute,
   chatRoute,
@@ -130,6 +156,7 @@ const routeTree = rootRoute.addChildren([
   settingsRoute,
   notificationsRoute,
   profileRoute,
+  profileEditRoute,
 ]);
 
 export const router = createRouter({ routeTree });

@@ -163,6 +163,72 @@ export function parseEventPage(data: unknown): EventPage {
   return v.parse(EventPage, data);
 }
 
+export function parseEventList(data: unknown): EventList {
+  return v.parse(EventList, data);
+}
+
+export const MyEvent = v.object({
+  signup_id: v.string(),
+  status: v.string(),
+  event: Event,
+});
+
+export type MyEvent = v.InferOutput<typeof MyEvent>;
+
+export const MyEventList = v.object({
+  events: v.array(MyEvent),
+});
+
+export type MyEventList = v.InferOutput<typeof MyEventList>;
+
+export function parseMyEventList(data: unknown): MyEventList {
+  return v.parse(MyEventList, data);
+}
+
+export const Notification = v.object({
+  id: v.string(),
+  type: v.string(),
+  category: v.string(),
+  title: v.string(),
+  body: v.string(),
+  data: v.record(v.string(), v.string()),
+  read: v.boolean(),
+  read_at: v.optional(v.string()),
+  created_at: v.string(),
+});
+
+export type Notification = v.InferOutput<typeof Notification>;
+
+export function parseNotification(data: unknown): Notification {
+  return v.parse(Notification, data);
+}
+
+export const NotificationList = v.object({
+  notifications: v.array(Notification),
+  unread_count: v.number(),
+  next_cursor: v.optional(v.string()),
+});
+
+export type NotificationList = v.InferOutput<typeof NotificationList>;
+
+export function parseNotificationList(data: unknown): NotificationList {
+  return v.parse(NotificationList, data);
+}
+
+export const UnreadCount = v.object({ count: v.number() });
+export type UnreadCount = v.InferOutput<typeof UnreadCount>;
+
+export function parseUnreadCount(data: unknown): UnreadCount {
+  return v.parse(UnreadCount, data);
+}
+
+export const UnreadAfterReadAll = v.object({ unread_count: v.number() });
+export type UnreadAfterReadAll = v.InferOutput<typeof UnreadAfterReadAll>;
+
+export function parseUnreadAfterReadAll(data: unknown): UnreadAfterReadAll {
+  return v.parse(UnreadAfterReadAll, data);
+}
+
 export function parseOrganizerDirectory(data: unknown): OrganizerDirectory {
   return v.parse(OrganizerDirectory, data);
 }
