@@ -4,6 +4,7 @@ import { NuqsAdapter } from "nuqs/adapters/tanstack-router";
 import { queryClient } from "./lib/query";
 import { AppShell } from "./shell/AppShell";
 import { ChatPage } from "./pages/ChatPage";
+import { ChatThreadPage } from "./pages/ChatThreadPage";
 import { EventPage } from "./pages/EventPage";
 import { ExplorePage } from "./pages/ExplorePage";
 import { HomePage } from "./pages/HomePage";
@@ -84,6 +85,15 @@ const chatRoute = createRoute({
   component: ChatPage,
 });
 
+const chatThreadRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/chat/$id",
+  component: function ChatThreadRoute() {
+    const { id } = chatThreadRoute.useParams();
+    return <ChatThreadPage id={id} />;
+  },
+});
+
 const myEventsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/my-events",
@@ -115,6 +125,7 @@ const routeTree = rootRoute.addChildren([
   loginRoute,
   loginVerifyRoute,
   chatRoute,
+  chatThreadRoute,
   myEventsRoute,
   settingsRoute,
   notificationsRoute,

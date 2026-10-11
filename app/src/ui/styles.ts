@@ -124,3 +124,36 @@ export const statusMessage = cva("grid gap-2 p-4 text-sm", {
     kind: "empty",
   },
 });
+
+export const chatRow = cva(
+  "flex w-full items-center gap-3 border-b border-divider px-4 py-3 text-left",
+);
+
+export const chatBubble = cva("max-w-[80%] rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap", {
+  variants: {
+    mine: {
+      true: "bg-accent text-accent-contrast",
+      false: "bg-surface-elevated text-text",
+    },
+  },
+  defaultVariants: {
+    mine: false,
+  },
+});
+
+export const chatTickIcon = cva("size-3.5", {
+  variants: {
+    tone: {
+      grey: "text-text-subtle",
+      blue: "text-accent",
+    },
+  },
+  defaultVariants: {
+    tone: "grey",
+  },
+});
+
+export const chatUnread = cva(
+  "rounded-pill bg-accent px-2 py-0.5 text-[10px] font-bold text-accent-contrast",
+);
+
