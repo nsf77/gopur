@@ -44,7 +44,7 @@ export function ExplorePage() {
         }}
       >
         <div className="glass-surface min-h-11 flex-1 overflow-hidden rounded-pill">
-          <InputGroup.Root className="w-full border-0 bg-transparent shadow-none">
+          <InputGroup className="w-full border-0 bg-transparent shadow-none">
             <InputGroup.Addon>
               <MagnifyingGlassIcon className="size-5 text-text-muted" />
             </InputGroup.Addon>
@@ -54,7 +54,7 @@ export function ExplorePage() {
               value={draft}
               onValueChange={setDraft}
             />
-          </InputGroup.Root>
+          </InputGroup>
         </div>
         <Button
           type="button"
