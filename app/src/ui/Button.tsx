@@ -1,29 +1,31 @@
-import type { ParentProps } from "solid-js";
+import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { Link, type LinkProps } from "@tanstack/react-router";
 import { button, type ButtonVariants } from "./styles";
 
 export type ButtonVariant = NonNullable<ButtonVariants["variant"]>;
 
-export function Button(
-  props: ParentProps<{
-    variant?: ButtonVariant;
-    class?: string;
-    type?: "button" | "submit";
-    disabled?: boolean;
-    onClick?: (event: MouseEvent) => void;
-    href?: string;
-  }>,
-) {
-  const cls = () => button({ variant: props.variant, class: props.class });
-  if (props.href) {
+export function Button({
+  variant,
+  className,
+  children,
+  to,
+  ...props
+}: ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: ButtonVariant;
+  children: ReactNode;
+  to?: LinkProps["to"];
+}) {
+  const cls = button({ variant, class: className });
+  if (to) {
     return (
-      <a href={props.href} class={cls()}>
-        {props.children}
-      </a>
+      <Link to={to} className={cls}>
+        {children}
+      </Link>
     );
   }
   return (
-    <button type={props.type ?? "button"} class={cls()} disabled={props.disabled} onClick={props.onClick}>
-      {props.children}
+    <button type="button" className={cls} {...props}>
+      {children}
     </button>
   );
 }

@@ -40,7 +40,10 @@ export function setThemePreference(next: ThemePreference): void {
 export function initTheme(): void {
   preference = pipe(
     O.fromNullable(localStorage.getItem(KEY)),
-    O.match((value) => (isPref(value) ? value : "system"), () => "system" as ThemePreference),
+    O.match(
+      (value) => (isPref(value) ? value : "system"),
+      () => "system" as ThemePreference,
+    ),
   );
   applyResolvedTheme(preference);
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {

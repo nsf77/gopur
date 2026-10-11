@@ -1,35 +1,31 @@
-import IconBell from "~icons/lucide/bell";
-import IconCalendarDays from "~icons/lucide/calendar-days";
-import IconCircleUserRound from "~icons/lucide/circle-user-round";
-import IconCompass from "~icons/lucide/compass";
-import IconHouse from "~icons/lucide/house";
-import IconMessageCircle from "~icons/lucide/message-circle";
-import IconSettings from "~icons/lucide/settings";
-import { t } from "../lib/i18n";
+import type { LinkProps } from "@tanstack/react-router";
+import type { LucideIcon } from "lucide-react";
+import { Bell, CalendarDays, CircleUserRound, Compass, House, MessageCircle, Settings } from "lucide-react";
+import { m } from "../paraglide/messages.js";
 
-type LucideIcon = typeof IconHouse;
+export type NavHref = NonNullable<LinkProps["to"]>;
 
 export type NavItem = {
-  href: string;
+  href: NavHref;
   label: string;
   icon: LucideIcon;
 };
 
 export function tabBarItems(): NavItem[] {
   return [
-    { href: "/", label: t("tabs.home"), icon: IconHouse },
-    { href: "/explore", label: t("tabs.explore"), icon: IconCompass },
-    { href: "/chat", label: t("tabs.chat"), icon: IconMessageCircle },
-    { href: "/my-events", label: t("tabs.myEvents"), icon: IconCalendarDays },
-    { href: "/profile", label: t("tabs.profile"), icon: IconCircleUserRound },
+    { href: "/", label: m.tabs_home(), icon: House },
+    { href: "/explore", label: m.tabs_explore(), icon: Compass },
+    { href: "/chat", label: m.tabs_chat(), icon: MessageCircle },
+    { href: "/my-events", label: m.tabs_myEvents(), icon: CalendarDays },
+    { href: "/profile", label: m.tabs_profile(), icon: CircleUserRound },
   ];
 }
 
 export function sidebarItems(): NavItem[] {
   return [
     ...tabBarItems().filter((item) => item.href !== "/chat"),
-    { href: "/notifications", label: t("notifications.title"), icon: IconBell },
-    { href: "/settings", label: t("settings.title"), icon: IconSettings },
+    { href: "/notifications", label: m.notifications_title(), icon: Bell },
+    { href: "/settings", label: m.settings_title(), icon: Settings },
   ];
 }
 
@@ -42,22 +38,25 @@ export function isNavItemActive(pathname: string, item: Pick<NavItem, "href">): 
 export function shellMode(pathname: string): "home" | "explore" | "detail" | "primary" {
   if (pathname === "/") return "home";
   if (pathname === "/explore" || pathname.startsWith("/explore/")) return "explore";
-  if (
-    pathname.startsWith("/event/") ||
-    pathname.startsWith("/login") ||
-    pathname.startsWith("/organizer/") ||
-    pathname.startsWith("/chat/")
-  ) {
+  if (pathname.startsWith("/event/") || pathname.startsWith("/login") || pathname.startsWith("/chat/")) {
     return "detail";
   }
   return "primary";
 }
 
 export function hideTabBar(pathname: string): boolean {
-  return (
-    pathname.startsWith("/event/") ||
-    pathname.startsWith("/login") ||
-    pathname.startsWith("/profile/edit") ||
-    pathname.startsWith("/chat/")
-  );
+  return pathname.startsWith("/event/") || pathname.startsWith("/login") || pathname.startsWith("/chat/");
+}
+
+export function titleFor(pathname: string): string {
+  if (pathname === "/") return m.home_title();
+  if (pathname.startsWith("/explore")) return m.tabs_explore();
+  if (pathname.startsWith("/profile")) return m.profile_title();
+  if (pathname.startsWith("/settings")) return m.settings_title();
+  if (pathname.startsWith("/login")) return m.auth_welcome();
+  if (pathname.startsWith("/chat")) return m.tabs_chat();
+  if (pathname.startsWith("/my-events")) return m.tabs_myEvents();
+  if (pathname.startsWith("/notifications")) return m.notifications_title();
+  if (pathname.startsWith("/event/")) return m.event_title();
+  return "Gopur";
 }

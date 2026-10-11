@@ -1,20 +1,26 @@
 # Gopur
 
-Bun workspace monorepo for the Gopur PWA (`app/`) and Cloudflare Workers API (`api/`).
+Bun workspace monorepo for the Gopur SPA (`app/`) and Cloudflare Workers API (`api/`).
 
 ## Surfaces
 
 - Workspaces: `app`, `api`
 - `api`: Hono on Workers, ArkType, D1 (HKG `gopur`) + KV `GOPUR_AUTH` + Durable Object `CHAT_HUB`
-- `app`: Solid 2 PWA — feed, explore, event detail, email OTP, profile/settings, like/save, `/chat` via Hono RPC + TanStack Query. Forms use TanStack Form `onChange`/`onSubmit` functions (no ArkType/Zod/Valibot in the PWA).
-- UI: `@kobalte/core` 2 alpha (behavior) + `class-variance-authority` (class variants), Tailwind v4, liquid-glass with Reduce Transparency, accent `#304385`
-- Lists: `GET /me/events`, `/me/saved`, `/me/likes`, `/users/:id/events`
-- Notifications: D1 inbox + `GET /notifications`, unread-count, mark-read
-- Host editor: `POST|PATCH /events` via `/event/new` and `/event/:id/edit`
+- `app`: React 19 SPA (React Compiler) — TanStack Router stubs for `/`, `/explore`, `/event/:id`, `/login`, `/login/verify`, `/chat`, `/my-events`, `/settings`, `/notifications`, `/profile`. Hono RPC (`hc` + `AppType`) + TanStack Query; Valibot parses client payloads. Zustand session stub. nuqs on explore search. Paraglide JS `en` + `zh-Hant`.
+- UI: `@base-ui/react` (behavior) + `class-variance-authority` (class variants), Tailwind v4, liquid-glass with Reduce Transparency, accent `#304385`, Lucide (`lucide-react`)
+- Lists: `GET /me/events`, `/me/saved`, `/me/likes`, `/users/:id/events` (API; UI later)
+- Notifications: D1 inbox + `GET /notifications` (API; UI later)
+- Host editor: `POST|PATCH /events` (API; UI later)
 - Importer: Wrangler cron `0 16 * * *` (00:00 HKT). Manual `POST /import/run` with `X-Import-Token`.
-- Chat: store-and-forward relay (device IndexedDB history, ticks, 30-day TTL) over `/ws` (and `/api/ws`)
+- Chat: store-and-forward relay over `/ws` (and `/api/ws`) (API; UI later)
 
 Not in this stage: production secrets rotation.
+
+## Cloudflare Kumo vs deploy
+
+[`@cloudflare/kumo`](https://www.npmjs.com/package/@cloudflare/kumo) is Cloudflare’s React **component library**, not the Worker/assets deploy path. Gopur’s SPA uses Base UI + Lucide instead of Kumo/Phosphor.
+
+Deploy stays **Vite build + Wrangler Workers assets** (`app/wrangler.toml`: `assets.directory = "./dist"`, `not_found_handling = "single-page-application"`, `src/worker.ts` ASSETS fetch) so go.pur.run / `gopur-app` dashboard Builds keep working. The current Cloudflare Vite SPA convention is `@cloudflare/vite-plugin`; it is not wired yet so the existing `assets.directory` snapshot deploy is unchanged.
 
 ## Setup
 
@@ -30,7 +36,7 @@ bun install
 # API — http://localhost:8787
 bun run dev:api
 
-# PWA — http://localhost:3000 (set VITE_API_URL if the API is not on :8787)
+# SPA — http://localhost:3000 (set VITE_API_URL if the API is not on :8787)
 bun run dev:app
 ```
 
@@ -43,7 +49,6 @@ bun run typecheck
 bun run --filter api build
 bun run --filter app build
 ```
-
 
 ## Cloudflare Workers (Git deploy)
 

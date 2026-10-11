@@ -10,8 +10,7 @@
     "noEmit": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
-    "jsx": "preserve",
-    "jsxImportSource": "@solidjs/web",
+    "jsx": "react-jsx",
     "types": ["vite/client"]
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],

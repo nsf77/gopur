@@ -1,0 +1,119 @@
+import { QueryClientProvider } from "@tanstack/react-query";
+import { Outlet, createRootRoute, createRoute, createRouter } from "@tanstack/react-router";
+import { NuqsAdapter } from "nuqs/adapters/tanstack-router";
+import { queryClient } from "./lib/query";
+import { AppShell } from "./shell/AppShell";
+import { ChatPage } from "./pages/ChatPage";
+import { EventPage } from "./pages/EventPage";
+import { ExplorePage } from "./pages/ExplorePage";
+import { HomePage } from "./pages/HomePage";
+import { LoginPage } from "./pages/LoginPage";
+import { LoginVerifyPage } from "./pages/LoginVerifyPage";
+import { MyEventsPage } from "./pages/MyEventsPage";
+import { NotificationsPage } from "./pages/NotificationsPage";
+import { ProfilePage } from "./pages/ProfilePage";
+import { SettingsPage } from "./pages/SettingsPage";
+
+const rootRoute = createRootRoute({
+  component: function RootLayout() {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <NuqsAdapter>
+          <AppShell>
+            <Outlet />
+          </AppShell>
+        </NuqsAdapter>
+      </QueryClientProvider>
+    );
+  },
+});
+
+const indexRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/",
+  component: HomePage,
+});
+
+const exploreRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/explore",
+  component: ExplorePage,
+});
+
+const eventRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/event/$id",
+  component: function EventRoute() {
+    const { id } = eventRoute.useParams();
+    return <EventPage id={id} />;
+  },
+});
+
+const loginRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/login",
+  component: LoginPage,
+});
+
+const loginVerifyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/login/verify",
+  validateSearch: (search: Record<string, unknown>): { email: string } => ({
+    email: typeof search.email === "string" ? search.email : "",
+  }),
+  component: function LoginVerifyRoute() {
+    const { email } = loginVerifyRoute.useSearch();
+    return <LoginVerifyPage email={email} />;
+  },
+});
+
+const chatRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/chat",
+  component: ChatPage,
+});
+
+const myEventsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/my-events",
+  component: MyEventsPage,
+});
+
+const settingsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/settings",
+  component: SettingsPage,
+});
+
+const notificationsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/notifications",
+  component: NotificationsPage,
+});
+
+const profileRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/profile",
+  component: ProfilePage,
+});
+
+const routeTree = rootRoute.addChildren([
+  indexRoute,
+  exploreRoute,
+  eventRoute,
+  loginRoute,
+  loginVerifyRoute,
+  chatRoute,
+  myEventsRoute,
+  settingsRoute,
+  notificationsRoute,
+  profileRoute,
+]);
+
+export const router = createRouter({ routeTree });
+
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof router;
+  }
+}

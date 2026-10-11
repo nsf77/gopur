@@ -1,10 +1,8 @@
-import { t } from "../lib/i18n";
-
-export default function StubPage(props: { message: string }) {
+export function StubPage(props: { title: string; message: string }) {
   return (
-    <main class="p-4 pb-24">
-      <h1 class="m-0 text-2xl font-extrabold tracking-tight">{t("common.comingSoon")}</h1>
-      <p class="mt-2 text-sm text-text-muted">{props.message}</p>
+    <main className="p-4">
+      <h1 className="m-0 text-2xl font-extrabold tracking-tight">{props.title}</h1>
+      <p className="mt-2 text-sm text-text-muted">{props.message}</p>
     </main>
   );
 }
