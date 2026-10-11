@@ -1,55 +1,34 @@
-import { OTPField, useOTPFieldContext } from "@kobalte/core/otp-field";
-import { For, createUniqueId } from "solid-js";
-import { otpInput, otpLabel, otpRoot, otpSlot, otpSlots } from "./styles";
+import { OTPField } from "@base-ui/react/otp-field";
+import { otpInput, otpLabel, otpRoot, otpSlots } from "./styles";
 
 export const OTP_LENGTH = 6;
 
-const SLOT_INDEXES = [0, 1, 2, 3, 4, 5] as const;
-
-function DigitSlots() {
-  const otp = useOTPFieldContext();
-  return (
-    <div class={otpSlots()} aria-hidden="true">
-      <For each={SLOT_INDEXES} keyed={(index) => index}>
-        {(index) => {
-          const active = () => otp.activeSlots().includes(index());
-          const char = () => otp.value()[index()] ?? "";
-          return <div class={otpSlot({ active: active() })}>{char()}</div>;
-        }}
-      </For>
-    </div>
-  );
-}
-
 export function OtpField(props: {
-  value: string;
-  name?: string;
+  value?: string;
   disabled?: boolean;
-  invalid?: boolean;
   label: string;
-  onChange: (value: string) => void;
-  onComplete?: (value: string) => void;
+  onValueComplete?: (value: string) => void;
 }) {
-  const labelId = createUniqueId();
   return (
-    <div class={otpRoot()}>
-      <span id={labelId} class={otpLabel()}>
-        {props.label}
-      </span>
-      <OTPField
-        maxLength={OTP_LENGTH}
+    <div className={otpRoot()}>
+      <span className={otpLabel()}>{props.label}</span>
+      <OTPField.Root
+        length={OTP_LENGTH}
         value={props.value}
-        name={props.name}
         disabled={props.disabled}
-        required
-        validationState={props.invalid ? "invalid" : undefined}
-        onChange={props.onChange}
-        onComplete={props.onComplete}
-        aria-labelledby={labelId}
+        validationType="numeric"
+        onValueComplete={(value) => props.onValueComplete?.(value)}
       >
-        <OTPField.Input class={otpInput()} />
-        <DigitSlots />
-      </OTPField>
+        <div className={otpSlots()}>
+          {Array.from({ length: OTP_LENGTH }, (_, index) => (
+            <OTPField.Input
+              key={index}
+              className={otpInput()}
+              aria-label={index === 0 ? props.label : `Character ${index + 1} of ${OTP_LENGTH}`}
+            />
+          ))}
+        </div>
+      </OTPField.Root>
     </div>
   );
 }

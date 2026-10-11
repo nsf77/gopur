@@ -50,46 +50,24 @@ export const dialogHandle = cva("mx-auto mb-3 h-1 w-9 rounded-pill bg-divider md
 
 export const tabsList = cva("flex gap-1 px-4");
 export const tabsTrigger = cva(
-  "min-h-11 rounded-pill px-3 text-sm font-semibold text-text-muted ui-selected:bg-accent-subtle ui-selected:text-accent",
+  "min-h-11 rounded-pill px-3 text-sm font-semibold text-text-muted data-selected:bg-accent-subtle data-selected:text-accent",
 );
 export const tabsContent = cva("pt-2");
 
 export const switchRoot = cva("flex min-h-11 items-center gap-3");
 export const switchControl = cva(
-  "relative inline-flex h-7 w-11 items-center rounded-pill bg-surface-pressed ui-checked:bg-accent",
+  "relative inline-flex h-7 w-11 items-center rounded-pill bg-surface-pressed data-checked:bg-accent",
 );
 export const switchThumb = cva(
-  "size-5 translate-x-1 rounded-full bg-white transition-transform ui-checked:translate-x-5",
+  "size-5 translate-x-1 rounded-full bg-white transition-transform data-checked:translate-x-5",
 );
 export const switchLabel = cva("text-sm font-medium");
-
-export const radioLabel = cva("sr-only");
-export const radioOptions = cva("grid gap-1");
-export const radioItem = cva(
-  "flex min-h-11 items-center gap-3 rounded-xl px-2 hover:bg-surface-elevated",
-);
-export const radioControl = cva(
-  "size-4 rounded-full border border-divider ui-checked:border-accent ui-checked:bg-accent",
-);
-export const radioItemLabel = cva("text-sm font-medium");
 
 export const otpRoot = cva("grid gap-1");
 export const otpLabel = cva("text-sm font-medium");
 export const otpSlots = cva("flex gap-2");
-export const otpInput = cva("z-10");
-export const otpSlot = cva(
-  "flex size-11 items-center justify-center rounded-md border bg-surface text-lg font-semibold tabular-nums",
-  {
-    variants: {
-      active: {
-        true: "border-accent",
-        false: "border-divider",
-      },
-    },
-    defaultVariants: {
-      active: false,
-    },
-  },
+export const otpInput = cva(
+  "flex size-11 items-center justify-center rounded-md border border-divider bg-surface text-center text-lg font-semibold tabular-nums outline-none data-focused:border-accent",
 );
 
 export const statusMessage = cva("grid gap-2 p-4 text-sm", {
@@ -101,18 +79,5 @@ export const statusMessage = cva("grid gap-2 p-4 text-sm", {
   },
   defaultVariants: {
     kind: "empty",
-  },
-});
-
-export const avatar = cva("inline-flex shrink-0 overflow-hidden rounded-full", {
-  variants: {
-    size: {
-      sm: "size-8 text-xs",
-      md: "size-10 text-sm",
-      lg: "size-14 text-base",
-    },
-  },
-  defaultVariants: {
-    size: "md",
   },
 });

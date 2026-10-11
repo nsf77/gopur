@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import logoSvg from "./gopur-logo.svg?raw";
 
 const viewBox = logoSvg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/);
@@ -11,12 +12,12 @@ const inlineLogo = logoSvg.replace(
 
 export function GopurLogo() {
   return (
-    <a
-      href="/"
-      class="block h-8 shrink-0 text-text no-underline"
+    <Link
+      to="/"
+      className="block h-8 shrink-0 text-text no-underline"
       style={{ width: `${LOGO_WIDTH_PX}px`, height: `${LOGO_HEIGHT_PX}px` }}
       aria-label="Gopur"
-      innerHTML={inlineLogo}
+      dangerouslySetInnerHTML={{ __html: inlineLogo }}
     />
   );
 }

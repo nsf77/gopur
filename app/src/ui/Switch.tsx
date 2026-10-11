@@ -1,18 +1,17 @@
-import { Switch } from "@kobalte/core/switch";
+import { Switch } from "@base-ui/react/switch";
 import { switchControl, switchLabel, switchRoot, switchThumb } from "./styles";
 
 export function SwitchField(props: {
   checked: boolean;
   label: string;
-  onChange: (checked: boolean) => void;
+  onCheckedChange: (checked: boolean) => void;
 }) {
   return (
-    <Switch checked={props.checked} onChange={props.onChange} class={switchRoot()}>
-      <Switch.Input />
-      <Switch.Control class={switchControl()}>
-        <Switch.Thumb class={switchThumb()} />
-      </Switch.Control>
-      <Switch.Label class={switchLabel()}>{props.label}</Switch.Label>
-    </Switch>
+    <label className={switchRoot()}>
+      <Switch.Root checked={props.checked} onCheckedChange={props.onCheckedChange} className={switchControl()}>
+        <Switch.Thumb className={switchThumb()} />
+      </Switch.Root>
+      <span className={switchLabel()}>{props.label}</span>
+    </label>
   );
 }

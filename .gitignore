@@ -1,6 +1,7 @@
 node_modules
 dist
 .wrangler
+app/src/paraglide
 .dev.vars
 *.local
 .DS_Store
