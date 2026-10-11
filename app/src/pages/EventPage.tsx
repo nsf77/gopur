@@ -1,4 +1,4 @@
-import { ExternalLink } from "lucide-react";
+import { Link } from "@cloudflare/kumo/components/link";
 import { G, O, pipe } from "../lib/belt";
 import { eventImageUrls, eventText, formatEventWhen, formatHkdDollars } from "../lib/event-text";
 import { isNotFound, useEvent } from "../lib/queries";
@@ -90,15 +90,15 @@ export function EventPage({ id }: { id: string }) {
         </>
       ) : null}
       {G.isString(ev.source_url) && ev.source_url ? (
-        <a
-          className="mt-6 inline-flex min-h-11 items-center gap-2 font-semibold text-accent no-underline"
+        <Link
+          className="mt-6 inline-flex min-h-11 items-center gap-2 font-semibold"
           href={ev.source_url}
           target="_blank"
           rel="noreferrer"
         >
           {m.event_viewSource()}
-          <ExternalLink className="size-4" />
-        </a>
+          <Link.ExternalIcon />
+        </Link>
       ) : null}
     </main>
   );

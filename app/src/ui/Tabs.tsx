@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
-import { Tabs as BaseTabs } from "@base-ui/react/tabs";
-import { tabsContent, tabsList, tabsTrigger } from "./styles";
+import { Tabs as KumoTabs } from "@cloudflare/kumo/components/tabs";
 
 export function Tabs(props: {
   value: string;
@@ -8,20 +7,17 @@ export function Tabs(props: {
   items: { value: string; label: string; content: ReactNode }[];
   "aria-label"?: string;
 }) {
+  const active = props.items.find((item) => item.value === props.value) ?? props.items[0];
   return (
-    <BaseTabs.Root value={props.value} onValueChange={props.onValueChange}>
-      <BaseTabs.List className={tabsList()} aria-label={props["aria-label"]}>
-        {props.items.map((item) => (
-          <BaseTabs.Tab key={item.value} value={item.value} className={tabsTrigger()}>
-            {item.label}
-          </BaseTabs.Tab>
-        ))}
-      </BaseTabs.List>
-      {props.items.map((item) => (
-        <BaseTabs.Panel key={item.value} value={item.value} className={tabsContent()}>
-          {item.content}
-        </BaseTabs.Panel>
-      ))}
-    </BaseTabs.Root>
+    <div aria-label={props["aria-label"]}>
+      <KumoTabs
+        variant="segmented"
+        value={props.value}
+        onValueChange={props.onValueChange}
+        className="px-4"
+        tabs={props.items.map((item) => ({ value: item.value, label: item.label }))}
+      />
+      <div className="pt-2">{active?.content}</div>
+    </div>
   );
 }

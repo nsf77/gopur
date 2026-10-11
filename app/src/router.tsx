@@ -1,7 +1,9 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Outlet, createRootRoute, createRoute, createRouter } from "@tanstack/react-router";
+import { LinkProvider } from "@cloudflare/kumo/utils";
 import { NuqsAdapter } from "nuqs/adapters/tanstack-router";
 import { queryClient } from "./lib/query";
+import { AppLink } from "./ui/kumo-link";
 import { AppShell } from "./shell/AppShell";
 import { ChatPage } from "./pages/ChatPage";
 import { EventPage } from "./pages/EventPage";
@@ -18,11 +20,13 @@ const rootRoute = createRootRoute({
   component: function RootLayout() {
     return (
       <QueryClientProvider client={queryClient}>
-        <NuqsAdapter>
-          <AppShell>
-            <Outlet />
-          </AppShell>
-        </NuqsAdapter>
+        <LinkProvider component={AppLink}>
+          <NuqsAdapter>
+            <AppShell>
+              <Outlet />
+            </AppShell>
+          </NuqsAdapter>
+        </LinkProvider>
       </QueryClientProvider>
     );
   },

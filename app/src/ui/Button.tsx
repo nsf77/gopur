@@ -1,11 +1,12 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
-import { Link, type LinkProps } from "@tanstack/react-router";
-import { button, type ButtonVariants } from "./styles";
+import type { LinkProps } from "@tanstack/react-router";
+import { Button as KumoButton, LinkButton } from "@cloudflare/kumo/components/button";
+import { cn } from "@cloudflare/kumo/utils";
 
-export type ButtonVariant = NonNullable<ButtonVariants["variant"]>;
+export type ButtonVariant = "primary" | "secondary" | "ghost";
 
 export function Button({
-  variant,
+  variant = "primary",
   width,
   className,
   children,
@@ -13,21 +14,22 @@ export function Button({
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant;
-  width?: ButtonVariants["width"];
+  width?: "auto" | "grow" | "full";
   children: ReactNode;
   to?: LinkProps["to"];
+  loading?: boolean;
 }) {
-  const cls = button({ variant, width, class: className });
+  const cls = cn(width === "full" && "w-full", width === "grow" && "flex-1", className);
   if (to) {
     return (
-      <Link to={to} className={cls}>
+      <LinkButton href={typeof to === "string" ? to : String(to)} variant={variant} className={cls}>
         {children}
-      </Link>
+      </LinkButton>
     );
   }
   return (
-    <button type="button" className={cls} {...props}>
+    <KumoButton variant={variant} className={cls} {...props}>
       {children}
-    </button>
+    </KumoButton>
   );
 }

@@ -26,17 +26,17 @@ export function SettingsPage() {
       <SwitchField checked={preview} label={m.settings_glassPreview()} onCheckedChange={setPreview} />
       {preview ? <div className="glass-surface rounded-lg p-4 text-sm">{m.settings_glassPreview()}</div> : null}
       <Button variant="secondary" onClick={() => setDialogOpen(true)}>
-        Base UI
+        Kumo
       </Button>
       <ConfirmDialog
         open={dialogOpen}
-        title="Base UI"
+        title="Kumo"
         confirmLabel={m.common_done()}
         cancelLabel={m.common_back()}
         onOpenChange={setDialogOpen}
         onConfirm={() => setDialogOpen(false)}
       >
-        Dialog / switch / tabs / OTP use @base-ui/react.
+        Dialog / switch / tabs / OTP use Cloudflare Kumo.
       </ConfirmDialog>
     </main>
   );

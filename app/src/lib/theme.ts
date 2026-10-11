@@ -27,6 +27,7 @@ export function resolveTheme(pref: ThemePreference): ResolvedTheme {
 export function applyResolvedTheme(pref: ThemePreference = preference): void {
   const resolved = resolveTheme(pref);
   document.documentElement.setAttribute("data-theme", resolved);
+  document.documentElement.setAttribute("data-mode", resolved);
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.setAttribute("content", resolved === "dark" ? "#000000" : "#304385");
 }

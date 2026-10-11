@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
-import { Bookmark, Heart, Share2 } from "lucide-react";
+import { BookmarkSimpleIcon, HeartIcon, ShareNetworkIcon } from "@phosphor-icons/react";
+import { Button, LinkButton } from "@cloudflare/kumo/components/button";
 import { formatCompactCount } from "../../lib/event-text";
 import { useRecordShare, useToggleLiked, useToggleSaved } from "../../lib/queries";
 import type { Event } from "../../lib/schemas";
@@ -8,8 +8,6 @@ import { getLocale } from "../../paraglide/runtime.js";
 import { m } from "../../paraglide/messages.js";
 import { useSessionStore } from "../../stores/session";
 
-const iconBtn =
-  "inline-flex min-h-11 min-w-11 items-center justify-center rounded-full bg-transparent text-text active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-45";
 const countClass = "inline-flex min-h-11 min-w-11 items-center justify-center px-1 text-xs tabular-nums text-text-muted";
 
 export function EventActionRow(props: { event: Event; loginNext: string }) {
@@ -54,43 +52,64 @@ export function EventActionRow(props: { event: Event; loginNext: string }) {
   return (
     <div className="flex min-h-11 w-full items-center gap-1">
       {signedIn ? (
-        <button
+        <Button
           type="button"
-          className={iconBtn}
+          variant="ghost"
+          shape="circle"
           aria-label={liked ? m.viewer_liked() : m.viewer_like()}
           aria-pressed={liked ? "true" : "false"}
           disabled={toggleLiked.isPending}
           onClick={onLike}
-        >
-          <Heart
-            className={`size-5${liked ? " fill-current text-red-500" : ""}${pop ? " gopur-like-pop" : ""}`}
-            onAnimationEnd={() => setPop(false)}
-          />
-        </button>
+          icon={
+            <HeartIcon
+              weight={liked ? "fill" : "regular"}
+              className={`size-5${liked ? " text-kumo-danger" : ""}${pop ? " gopur-like-pop" : ""}`}
+              onAnimationEnd={() => setPop(false)}
+            />
+          }
+        />
       ) : (
-        <Link className={iconBtn} aria-label={m.viewer_like()} to="/login" search={{ next: props.loginNext }}>
-          <Heart className="size-5" />
-        </Link>
+        <LinkButton
+          href={`/login?next=${encodeURIComponent(props.loginNext)}`}
+          variant="ghost"
+          shape="circle"
+          aria-label={m.viewer_like()}
+          icon={<HeartIcon className="size-5" />}
+        />
       )}
       {likeCount ? <span className={countClass}>{likeCount}</span> : null}
-      <button type="button" className={iconBtn} aria-label={m.viewer_share()} onClick={() => void onShare()}>
-        <Share2 className="size-5" />
-      </button>
+      <Button
+        type="button"
+        variant="ghost"
+        shape="circle"
+        aria-label={m.viewer_share()}
+        onClick={() => void onShare()}
+        icon={<ShareNetworkIcon className="size-5" />}
+      />
       {signedIn ? (
-        <button
+        <Button
           type="button"
-          className={iconBtn}
+          variant="ghost"
+          shape="circle"
           aria-label={saved ? m.viewer_saved() : m.viewer_save()}
           aria-pressed={saved ? "true" : "false"}
           disabled={toggleSaved.isPending}
           onClick={onSave}
-        >
-          <Bookmark className={`size-5${saved ? " fill-current text-accent" : ""}`} />
-        </button>
+          icon={
+            <BookmarkSimpleIcon
+              weight={saved ? "fill" : "regular"}
+              className={`size-5${saved ? " text-accent" : ""}`}
+            />
+          }
+        />
       ) : (
-        <Link className={iconBtn} aria-label={m.viewer_save()} to="/login" search={{ next: props.loginNext }}>
-          <Bookmark className="size-5" />
-        </Link>
+        <LinkButton
+          href={`/login?next=${encodeURIComponent(props.loginNext)}`}
+          variant="ghost"
+          shape="circle"
+          aria-label={m.viewer_save()}
+          icon={<BookmarkSimpleIcon className="size-5" />}
+        />
       )}
       {copyNotice ? (
         <p className="m-0 text-sm text-text-muted" role="status">

@@ -1,6 +1,14 @@
 import type { LinkProps } from "@tanstack/react-router";
-import type { LucideIcon } from "lucide-react";
-import { Bell, CalendarDays, CircleUserRound, Compass, House, MessageCircle, Settings } from "lucide-react";
+import type { Icon } from "@phosphor-icons/react";
+import {
+  BellIcon,
+  CalendarDotsIcon,
+  ChatCircleIcon,
+  CompassIcon,
+  GearIcon,
+  HouseIcon,
+  UserCircleIcon,
+} from "@phosphor-icons/react";
 import { m } from "../paraglide/messages.js";
 
 export type NavHref = NonNullable<LinkProps["to"]>;
@@ -8,24 +16,24 @@ export type NavHref = NonNullable<LinkProps["to"]>;
 export type NavItem = {
   href: NavHref;
   label: string;
-  icon: LucideIcon;
+  icon: Icon;
 };
 
 export function tabBarItems(): NavItem[] {
   return [
-    { href: "/", label: m.tabs_home(), icon: House },
-    { href: "/explore", label: m.tabs_explore(), icon: Compass },
-    { href: "/chat", label: m.tabs_chat(), icon: MessageCircle },
-    { href: "/my-events", label: m.tabs_myEvents(), icon: CalendarDays },
-    { href: "/profile", label: m.tabs_profile(), icon: CircleUserRound },
+    { href: "/", label: m.tabs_home(), icon: HouseIcon },
+    { href: "/explore", label: m.tabs_explore(), icon: CompassIcon },
+    { href: "/chat", label: m.tabs_chat(), icon: ChatCircleIcon },
+    { href: "/my-events", label: m.tabs_myEvents(), icon: CalendarDotsIcon },
+    { href: "/profile", label: m.tabs_profile(), icon: UserCircleIcon },
   ];
 }
 
 export function sidebarItems(): NavItem[] {
   return [
     ...tabBarItems().filter((item) => item.href !== "/chat"),
-    { href: "/notifications", label: m.notifications_title(), icon: Bell },
-    { href: "/settings", label: m.settings_title(), icon: Settings },
+    { href: "/notifications", label: m.notifications_title(), icon: BellIcon },
+    { href: "/settings", label: m.settings_title(), icon: GearIcon },
   ];
 }
 

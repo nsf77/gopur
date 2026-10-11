@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { BadgeCheck } from "lucide-react";
+import { SealCheckIcon } from "@phosphor-icons/react";
 import { G, O, pipe } from "../../lib/belt";
 import { eventImageUrls, eventText, formatEventWhen, formatHkdDollars } from "../../lib/event-text";
 import type { Event } from "../../lib/schemas";
@@ -54,7 +54,7 @@ export function EventCard(props: { event: Event }) {
           <Avatar name={organizerName} size="sm" />
           <div className="flex min-w-0 flex-1 items-baseline gap-2 text-sm">
             <span className="truncate font-bold">{organizerName}</span>
-            {props.event.organizer?.is_verified ? <BadgeCheck className="size-4 text-accent" aria-hidden="true" /> : null}
+            {props.event.organizer?.is_verified ? <SealCheckIcon className="size-4 text-accent" aria-hidden="true" /> : null}
             {!props.event.date_tbc && props.event.start_at ? (
               <span className="whitespace-nowrap text-xs text-text-muted">{formatEventWhen(props.event.start_at, loc)}</span>
             ) : null}

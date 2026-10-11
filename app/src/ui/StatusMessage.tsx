@@ -1,15 +1,22 @@
+import { WarningCircleIcon } from "@phosphor-icons/react";
+import { Banner } from "@cloudflare/kumo/components/banner";
+import { Empty } from "@cloudflare/kumo/components/empty";
 import { m } from "../paraglide/messages.js";
-import { statusMessage } from "./styles";
 
 export function StatusMessage(props: { kind: "empty" | "error"; message: string; onRetry?: () => void }) {
-  return (
-    <div className={statusMessage({ kind: props.kind })}>
-      <p className="m-0">{props.message}</p>
-      {props.onRetry ? (
-        <button type="button" className="text-left font-semibold text-accent" onClick={props.onRetry}>
-          {m.common_retry()}
-        </button>
-      ) : null}
-    </div>
-  );
+  if (props.kind === "error") {
+    return (
+      <div className="p-4">
+        <Banner
+          variant="error"
+          icon={<WarningCircleIcon weight="fill" />}
+          description={props.message}
+          action={
+            props.onRetry ? <Banner.Action onClick={props.onRetry}>{m.common_retry()}</Banner.Action> : undefined
+          }
+        />
+      </div>
+    );
+  }
+  return <Empty size="sm" className="p-4" title={props.message} />;
 }
