@@ -1,7 +1,11 @@
 import { m } from "../paraglide/messages.js";
 import { statusMessage } from "./styles";
 
-export function StatusMessage(props: { kind: "empty" | "error"; message: string; onRetry?: () => void }) {
+export function StatusMessage(props: {
+  kind: "empty" | "error" | "locked";
+  message: string;
+  onRetry?: () => void;
+}) {
   return (
     <div className={statusMessage({ kind: props.kind })}>
       <p className="m-0">{props.message}</p>

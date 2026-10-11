@@ -75,11 +75,26 @@ export const textInput = cva(
         true: "border-accent",
         false: "border-divider",
       },
+      multiline: {
+        true: "min-h-24 py-2",
+        false: "",
+      },
     },
     defaultVariants: {
       invalid: false,
+      multiline: false,
     },
   },
+);
+
+export const radioGroup = cva("grid gap-2");
+export const radioRow = cva("flex min-h-11 items-center gap-3 text-sm font-medium");
+export const radioControl = cva(
+  "flex size-5 shrink-0 items-center justify-center rounded-full border border-divider data-checked:border-accent",
+);
+export const radioIndicator = cva("size-2.5 rounded-full bg-accent");
+export const selectInput = cva(
+  "min-h-11 w-full rounded-md border border-divider bg-surface px-3 text-base outline-none",
 );
 
 export const otpRoot = cva("grid gap-1");
@@ -118,6 +133,7 @@ export const statusMessage = cva("grid gap-2 p-4 text-sm", {
     kind: {
       empty: "text-text-muted",
       error: "text-text-muted",
+      locked: "text-text-muted",
     },
   },
   defaultVariants: {
