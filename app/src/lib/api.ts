@@ -61,7 +61,12 @@ function parseJsonError(body: string): ErrorBody | null {
 
 export type ApiClient = ReturnType<typeof hc<AppType>>;
 
-const baseUrl = () => import.meta.env.VITE_API_URL ?? "http://localhost:8787";
+function baseUrl(): string {
+  const configured = import.meta.env.VITE_API_URL;
+  if (configured) return configured.replace(/\/$/, "");
+  if (typeof window !== "undefined") return `${window.location.origin}/api`;
+  return "/api";
+}
 
 export function createApiClient(token = "", fetchImpl: typeof fetch = fetch): ApiClient {
   return hc<AppType>(baseUrl(), {

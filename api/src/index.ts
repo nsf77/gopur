@@ -469,9 +469,9 @@ WHERE l.event_id = ? AND u.banned_at IS NULL
     return c.json(found);
   });
 
-const api = reads.route("/", writes).route("/", imports).route("/", meLists).route("/", notes).route("/", chat);
+export const api = reads.route("/", writes).route("/", imports).route("/", meLists).route("/", notes).route("/", chat);
 export type AppType = typeof api;
-/** Serve under /api on go.pur.run and at root on *.workers.dev */
+/** Combined Worker mounts `api` at `/api` only. Dual mount remains for a standalone API Worker. */
 const app = new Hono<{ Bindings: Bindings }>().route("/api", api).route("/", api);
 export default app;
 

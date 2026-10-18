@@ -1,12 +1,32 @@
 name = "gopur-app"
 main = "src/worker.ts"
 compatibility_date = "2026-10-10"
-account_id = "f13e891dc4bb32f8c1450b76344ad1ca"
+compatibility_flags = ["nodejs_compat"]
+account_id = "[REDACTED]"
+upload_source_maps = true
 
-[assets]
-directory = "./dist"
-binding = "ASSETS"
-not_found_handling = "single-page-application"
+# Daily importer: 00:00 HKT (16:00 UTC). Manual: POST /api/import/run with X-Import-Token.
+[triggers]
+crons = ["0 16 * * *"]
 
-[vars]
-VITE_API_URL = "https://go.pur.run/api"
+[observability]
+enabled = true
+
+# D1 created in HKG. Schema lives in ../api/migrations.
+[[d1_databases]]
+binding = "DB"
+database_name = "gopur"
+database_id = "139222d6-55ef-46fd-9e62-41f0b5942559"
+migrations_dir = "../api/migrations"
+
+[[kv_namespaces]]
+binding = "GOPUR_AUTH"
+id = "fd21b33de2704609a40e6b27a9d18325"
+
+[[durable_objects.bindings]]
+name = "CHAT_HUB"
+class_name = "ChatHub"
+
+[[migrations]]
+tag = "v4-chat-hub"
+new_sqlite_classes = ["ChatHub"]
