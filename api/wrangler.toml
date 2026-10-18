@@ -1,3 +1,5 @@
+# D1/KV/DO bindings and migrations for the API package.
+# Production runtime is the TanStack Start Worker (app/wrangler.toml, gopur-app).
 name = "gopur-api"
 main = "src/worker.ts"
 compatibility_date = "2026-10-10"

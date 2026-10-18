@@ -1,6 +1,6 @@
 # Gopur agent notes
 
-Bun workspace monorepo. Workspaces: `app` (React SPA) and `api` (Hono on Cloudflare Workers).
+Bun workspace monorepo. Workspaces: `app` (TanStack Start on Cloudflare Workers) and `api` (Hono library: ArkType, D1/KV/DO).
 
 ## Package manager
 
@@ -9,23 +9,23 @@ Bun workspace monorepo. Workspaces: `app` (React SPA) and `api` (Hono on Cloudfl
 
 ## API (`api/`)
 
-- Hono on Cloudflare Workers via Wrangler.
-- Export a typed Hono app (`AppType`) so the SPA can call it with `hc` from `hono/client`.
+- Hono app (`AppType`) consumed by the SPA via `hc` from `hono/client`. Mounted on the Start Worker at `/api`.
 - Validate request query/params/json with **ArkType** (`arktype` + `@hono/arktype-validator`). Shared response types are ArkType schemas. Do not add Zod or TypeBox on the API.
 - Use `@mobily/ts-belt` (`pipe` / `O` / `R` / `A`) for optional values and expected failures. `noUncheckedIndexedAccess` is on.
 - Persistence is **D1** (`env.DB`) plus **KV** (`env.GOPUR_AUTH`) for OTP and session keys. Do not reintroduce Fly.io, `bun:sqlite`, or a local SQLite driver.
-- Read routes: `GET /healthz`, `/feed`, `/events`, `/events/:id`, `/events/:id/likers`, `/search/events`, `/organizers`, `/organizers/:key`.
+- Read routes: `GET /healthz`, `/feed`, `/events`, `/events/:id`, `/events/:id/likers`, `/search/events`, `/organizers`, `/organizers/:key` (all under `/api` on the combined Worker).
 - Auth: `POST /auth/email/start`, `POST /auth/email/verify`, `GET|PATCH /me` (JWT + KV OTP). Email via Brevo when `BREVO_API_KEY` is set; otherwise stub.
 - Writes: `POST|PATCH /events`, like/save/share, follow, `GET /users/:id`.
 - Lists / notifications: `/me/events|saved|likes`, `/notifications`.
-- Importer: Wrangler cron + `POST /import/run` (`IMPORT_TOKEN`).
-- Chat: Durable Object `CHAT_HUB`, store-and-forward relay, `/ws` (and `/api/ws`). Production deploy is a later stage.
+- Importer: Wrangler cron on the Start Worker + `POST /api/import/run` (`IMPORT_TOKEN`).
+- Chat: Durable Object `CHAT_HUB`, store-and-forward relay, `/ws` and `/api/ws`. Production deploy is a later stage.
 
 ## App (`app/`)
 
+- **TanStack Start** on one Cloudflare Worker (SSR document + client routes; `ssr: false` on the root route because session/theme live in `localStorage`).
 - React 19 + Vite + React Compiler. Do **not** add `useMemo` / `useCallback` for memoization — rely on the compiler.
-- TanStack Router, TanStack Query, nuqs, Zustand.
-- Call the API **only** through the Hono RPC client typed from `api`'s `AppType` (`hc`). Validate RPC JSON with **Valibot** on the client. Do not depend on `arktype` in the app.
+- TanStack Router (Start file routes), TanStack Query, nuqs, Zustand.
+- Call the API **only** through the Hono RPC client typed from `api`'s `AppType` (`hc`). Default base is same-origin `/api`. Validate RPC JSON with **Valibot** on the client. Do not depend on `arktype` in the app.
 - Use `@mobily/ts-belt` in query `select` / mappers and helpers.
 - i18n: Paraglide JS (`@inlang/paraglide-js`), locales `en` and `zh-Hant`.
 - UI: `@cloudflare/kumo` (granular `@cloudflare/kumo/components/...`; primitives only when Kumo has no styled equivalent, e.g. OTP). Tailwind v4 `@source` for Kumo dist. Do not add Ark UI, Kobalte, `@base-ui/react`, or `class-variance-authority` in app code.
@@ -35,10 +35,10 @@ Bun workspace monorepo. Workspaces: `app` (React SPA) and `api` (Hono on Cloudfl
 
 - Accent color: `#304385` (Tailwind v4 `@theme`, e.g. `--color-accent`).
 - Tailwind v4 + Apple liquid-glass with Reduce Transparency (`.glass-surface`).
-- App Worker: Vite build → Wrangler static assets (`app/wrangler.toml`, `not_found_handling = "single-page-application"`) for go.pur.run. Keep this assets Worker path.
-- SPA UI is `@cloudflare/kumo` (Cloudflare’s React component library: Base UI + Phosphor). That is **not** the Worker/assets deploy toolchain. Official Vite+Workers SPA plugin is `@cloudflare/vite-plugin`; this repo keeps the existing `assets.directory` + `src/worker.ts` deploy so dashboard Builds stay the same.
+- Single Worker: `app/wrangler.toml` (`gopur-app`) — `@cloudflare/vite-plugin` + custom `src/worker.ts` (Hono `/api` + `/ws`, then Start). Domain target: go.pur.run.
+- SPA UI is `@cloudflare/kumo` (Cloudflare’s React component library: Base UI + Phosphor). That is **not** the Worker deploy toolchain.
 
 ## Checks
 
-- Typecheck and build only (`bun run typecheck`, `bun run --filter api build`, `bun run --filter app build`).
+- Typecheck and build only (`bun run typecheck`, `bun run build`).
 - No Vitest / `bun test` suites unless a later stage asks. No GitHub Actions unless a later stage asks.
