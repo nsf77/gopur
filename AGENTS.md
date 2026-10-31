@@ -1,12 +1,13 @@
 # Gopur agent notes
 
-Bun + Turborepo monorepo. Layout matches Shopur: `apps/api`, `apps/mobile`, `packages/shared`.
+Bun + Turborepo monorepo. Layout matches Shopur: `apps/api`, `apps/mobile`, `apps/web`, `packages/shared`.
 
 ## Package manager
 
 - **Bun only.** Do not use npm, pnpm, or yarn to install or run scripts.
 - Root `workspaces` is `["apps/*", "packages/*"]`. Run `bun install` at the repo root.
 - Orchestrate with **Turborepo**: `bun run typecheck`, `bun run dev`, `bun run build`, `bun run deploy`.
+- Marketing site: `bun run dev:web`, `bun run build:web`, `bun run deploy:web`.
 
 ## API (`apps/api`)
 
@@ -37,6 +38,28 @@ Bun + Turborepo monorepo. Layout matches Shopur: `apps/api`, `apps/mobile`, `pac
 - Layout: `ScreenSafeArea` uses `StyleSheet` `flex: 1` (NativeWind `className="flex-1"` on SafeAreaView is unreliable on APKs).
 - Expo web is optional. Do not treat `export:web` as the APK success criterion.
 
+## Web (`apps/web`)
+
+- **Astro static** marketing site (`@gopur/web`). Locales `zh-HK` (default, `/zh-HK/`) and `en` (`/en/`).
+- Landing + short product pitch only. Links to the app at `https://go.pur.run`. Play/APK later. No auth, no Hono RPC, no Expo code in this package.
+- Brand: accent `#304385`. Wordmark is **GO** (Lobster) + **pur**.
+- Output is static `dist/`. **Do not** put Expo or the Hono Worker on Pages.
+
+### Cloudflare Pages (`gopur.pur.run`)
+
+Separate from Worker `gopur-app` at **go.pur.run**.
+
+Suggested Pages project name: `gopur-web`. Config: `apps/web/wrangler.toml` (`pages_build_output_dir = "./dist"`). No account secrets in git.
+
+```bash
+bun run build:web
+# from repo root, or:
+cd apps/web && bunx wrangler pages deploy dist --project-name gopur-web
+# equivalent: bun run deploy:web
+```
+
+Attach custom hostname **gopur.pur.run** in the Pages dashboard after the first deploy. Point **go.pur.run** at Worker `gopur-app` only.
+
 ## Shared (`packages/shared`)
 
 - Event text, drafts, profile form, access helpers, Valibot response schemas.
@@ -48,9 +71,10 @@ Bun + Turborepo monorepo. Layout matches Shopur: `apps/api`, `apps/mobile`, `pac
 bun install
 bun run typecheck
 bun run test          # api + shared Vitest
-bun run dev           # wrangler + expo
-bun run build         # typecheck api (web export is part of deploy)
-bun run deploy        # expo export --platform web → apps/api/public, then wrangler deploy
+bun run dev           # wrangler + expo (not the marketing site)
+bun run build         # typecheck api + build @gopur/web
+bun run deploy        # expo export --platform web → apps/api/public, then wrangler deploy (go.pur.run)
+bun run dev:web / build:web / deploy:web   # Astro Pages site (gopur.pur.run)
 ```
 
 Mobile:

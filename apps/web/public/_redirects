@@ -1,0 +1,4 @@
+# Astro/i18n may emit lowercase locale prefixes; files live at /zh-HK/.
+/zh-hk /zh-HK/ 301
+/zh-hk/ /zh-HK/ 301
+/zh-hk/* /zh-HK/:splat 301

@@ -1,0 +1,53 @@
+---
+import { copy, isLocale, localeHome, localeProduct } from "../copy";
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title: pageTitle, description } = Astro.props;
+const locale = isLocale(Astro.currentLocale) ? Astro.currentLocale : "zh-HK";
+const t = copy[locale];
+const homeHref = localeHome(locale);
+const productHref = localeProduct(locale);
+const onProduct = Astro.url.pathname.includes("/product");
+const title = pageTitle ? `${pageTitle} · Gopur` : t.title;
+---
+
+<!doctype html>
+<html lang={t.htmlLang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#304385" />
+    <meta name="description" content={description ?? t.description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lobster&display=swap"
+      rel="stylesheet"
+    />
+    <title>{title}</title>
+  </head>
+  <body>
+    <div class="shell">
+      <header class="top">
+        <a class="wordmark" href={homeHref} aria-label="Gopur">
+          <span class="go">GO</span><span class="pur">pur</span>
+        </a>
+        <nav class="nav" aria-label={t.navHome}>
+          <a href={homeHref} aria-current={onProduct ? undefined : "page"}>{t.navHome}</a>
+          <a href={productHref} aria-current={onProduct ? "page" : undefined}>{t.navProduct}</a>
+          <a class="lang" href={t.switchHref} hreflang={locale === "en" ? "zh-HK" : "en"}>
+            {t.switchLabel}
+          </a>
+        </nav>
+      </header>
+      <slot />
+      <footer>{t.footer}</footer>
+    </div>
+  </body>
+</html>

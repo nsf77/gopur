@@ -1,0 +1,22 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { APP_URL, copy, isLocale } from "../copy";
+
+const locale = isLocale(Astro.currentLocale) ? Astro.currentLocale : "zh-HK";
+const t = copy[locale];
+---
+
+<Layout title={t.navProduct} description={t.pitchBody}>
+  <main>
+    <section class="hero">
+      <p class="kicker">{t.pitchKicker}</p>
+      <h1>{t.pitchTitle}</h1>
+      <p class="lede">{t.pitchBody}</p>
+      <p class="lede">{t.ctaBody}</p>
+      <div class="actions">
+        <a class="btn btn-primary" href={APP_URL}>{t.openApp}</a>
+        <span class="muted">{t.androidSoon}</span>
+      </div>
+    </section>
+  </main>
+</Layout>
