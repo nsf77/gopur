@@ -13,4 +13,5 @@ apps/mobile/dist
 .env
 .env.*
 !.env.example
+!apps/mobile/.env.example
 *.tsbuildinfo

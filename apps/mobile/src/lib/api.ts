@@ -61,13 +61,12 @@ function parseJsonError(body: string): ErrorBody | null {
 
 export type ApiClient = ReturnType<typeof hc<AppType>>;
 
+// Metro inlines EXPO_PUBLIC_* at bundle time (static member access only).
+// `eas.json` env applies to `eas build`, not `eas update` — pass CLI env for OTA.
+const API_URL = (process.env.EXPO_PUBLIC_API_URL ?? "https://go.pur.run/api").replace(/\/$/, "");
+
 export function apiBase(): string {
-  const configured = process.env.EXPO_PUBLIC_API_URL;
-  if (configured) return configured.replace(/\/$/, "");
-  if (typeof window !== "undefined" && window.location?.origin) {
-    return `${window.location.origin}/api`;
-  }
-  return "https://go.pur.run/api";
+  return API_URL;
 }
 
 export function createApiClient(token = "", fetchImpl: typeof fetch = fetch): ApiClient {

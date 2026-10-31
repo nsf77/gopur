@@ -27,13 +27,13 @@ Bun + Turborepo monorepo. Layout matches Shopur: `apps/api`, `apps/mobile`, `pac
 
 ## Mobile (`apps/mobile`)
 
-- **Expo SDK 58** + Expo Router. Android-first. No iOS / TestFlight / Apple Developer path.
-- TanStack Query + `hc<AppType>` Hono RPC. Default API base is same-origin `/api` on web; native uses `EXPO_PUBLIC_API_URL` (see caveat below).
+- **Expo SDK 58** + Expo Router. **Android preview APK is the success criterion.** No iOS / TestFlight / Apple Developer path. Expo web export is optional.
+- TanStack Query + `hc<AppType>` Hono RPC. Native (and preview APK) uses static `process.env.EXPO_PUBLIC_API_URL` (default `https://go.pur.run/api`). Auth client uses `EXPO_PUBLIC_AUTH_URL` (default `https://go.pur.run`).
 - Client payload parsing: **Valibot** in `@gopur/shared`. Do not depend on `arktype` in the app.
 - i18n: Paraglide JS, locales `zh-Hant` (base) and `en`.
 - UI: NativeWind 5 (RC) + Gluestack-compatible provider. Phosphor (`phosphor-react-native`). Accent `#304385`.
 - Auth: Better Auth Email OTP + `@better-auth/expo` + SecureStore (web falls back to localStorage). Session token is also sent as `Authorization: Bearer` for Hono RPC.
-- Expo web static export is copied into `apps/api/public` so the Worker serves UI + `/api/*`.
+- Metro: override Expo’s default and set `inlineRequires: false`. Do **not** set `newArchEnabled` in `app.json`.
 
 ## Shared (`packages/shared`)
 
@@ -56,23 +56,51 @@ Mobile:
 ```bash
 bun run --filter mobile dev
 bun run --filter mobile android
+bun run --filter mobile typecheck
 ```
 
-## EAS (orchestrator)
+## Android preview APK (EAS)
 
-Do **not** invent `extra.eas.projectId` or commit `EXPO_TOKEN`.
+Do **not** invent `extra.eas.projectId` or commit `EXPO_TOKEN`. Only `eas init` may write the project id into `app.json`.
 
-1. From `apps/mobile`, the human runs `eas init` (creates the EAS project and writes `extra.eas.projectId`).
-2. Profiles in `eas.json`: `development` (dev client) and `preview` (Android APK, channel `preview`, `runtimeVersion.policy: fingerprint`).
-3. Preview build: `eas build --platform android --profile preview`
-4. Updates: `eas update --channel preview` (after `eas init`).
+Profiles in `apps/mobile/eas.json`: `development` (dev client APK) and `preview` (internal Android APK, channel `preview`, `runtimeVersion.policy: fingerprint`). Preview `env` pins `EXPO_PUBLIC_API_URL` / `EXPO_PUBLIC_AUTH_URL` to go.pur.run.
 
-### `EXPO_PUBLIC_*` CLI caveat
+### First APK
 
-Expo inlines `EXPO_PUBLIC_*` at **bundle** time. They are not Worker secrets.
+```bash
+cd apps/mobile
+bunx eas-cli login          # human; uses Expo account, not a committed token
+bunx eas-cli init           # once; writes extra.eas.projectId
+bunx eas-cli build --platform android --profile preview
+```
 
-- Web on go.pur.run: leave unset so the client uses same-origin `/api`.
-- Native preview APK: pass `EXPO_PUBLIC_API_URL=https://go.pur.run/api` as an EAS env / `.env` for the build, not as a Wrangler secret.
+Install the APK from the EAS build page (internal distribution). Package id is `run.pur.go`.
+
+### OTA updates (`eas update`)
+
+Fingerprint runtime: JS updates only apply to binaries with the same fingerprint.
+
+`eas.json` `env` is applied on **`eas build`**, not on **`eas update`**. Metro inlines `EXPO_PUBLIC_*` when it bundles, so the update CLI must see them:
+
+```bash
+cd apps/mobile
+EXPO_PUBLIC_API_URL=https://go.pur.run/api \
+EXPO_PUBLIC_AUTH_URL=https://go.pur.run \
+bunx eas-cli update --channel preview --message "describe the JS change"
+```
+
+Local `.env` (gitignored) is fine for Metro/`expo start`. Copy `apps/mobile/.env.example`.
+
+### Known footguns
+
+- **`inlineRequires: true`** — Expo Metro default. Has crashed preview APKs at launch (require cycles). Keep the override in `metro.config.js` at `false`. Never set it `true`.
+- **`newArchEnabled`** — leave unset in `app.json` until NativeWind / Reanimated / Better Auth Expo are proven on a real APK.
+- **Fabricated `extra.eas.projectId`** — EAS rejects a made-up UUID. Run `eas init`.
+- **`EXPO_PUBLIC_*` not on `eas update`** — APK talks to the wrong host or empty URL. Pass CLI env (above).
+- **Dynamic `process.env[name]`** — Metro will not inline. Always use `process.env.EXPO_PUBLIC_API_URL` / `process.env.EXPO_PUBLIC_AUTH_URL` as static member access.
+- **Fingerprint mismatch** — native-dep / `app.json` / plugin changes need a new `eas build`, not only `eas update`.
+- **`localhost` in a device APK** — the phone cannot reach the developer machine. Preview profile must keep production URLs.
+- Android-only. Do not add iOS credentials, `ios` bundle ids, or TestFlight steps.
 
 ## Secrets (wrangler, never commit)
 

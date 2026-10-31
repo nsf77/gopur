@@ -12,4 +12,13 @@ config.resolver.nodeModulesPaths = [
 ];
 config.resolver.disableHierarchicalLookup = true;
 
+// Expo defaults inlineRequires to true. That has crashed Android preview APKs
+// (require cycle / uninitialized module at launch). Do not set it true.
+config.transformer.getTransformOptions = async () => ({
+  transform: {
+    experimentalImportSupport: false,
+    inlineRequires: false,
+  },
+});
+
 module.exports = withNativewind(config, { input: "./global.css" });

@@ -38,7 +38,14 @@ bun run dev:api
 bun run dev:mobile
 ```
 
-Set `EXPO_PUBLIC_API_URL=http://localhost:8787/api` when the Expo app is not same-origin with the Worker.
+For a local API, set both (Metro inlines them at bundle time):
+
+```bash
+EXPO_PUBLIC_API_URL=http://localhost:8787/api
+EXPO_PUBLIC_AUTH_URL=http://localhost:8787
+```
+
+The preview APK defaults to `https://go.pur.run` (see `apps/mobile/eas.json` and `.env.example`).
 
 ## Deploy
 
@@ -52,7 +59,7 @@ Secrets (dashboard or `wrangler secret put`): `BETTER_AUTH_SECRET`, `JWT_SECRET`
 
 ## EAS (Android)
 
-`apps/mobile/eas.json` has `development` and `preview` (APK, channel `preview`, fingerprint runtime). Run `eas init` in `apps/mobile` before the first build — do not invent `extra.eas.projectId`. See `AGENTS.md`.
+`apps/mobile/eas.json` has `development` and `preview` (Android APK, channel `preview`, fingerprint runtime). Run `eas init` in `apps/mobile` before the first build — do not invent `extra.eas.projectId`. Preview env pins `EXPO_PUBLIC_API_URL` / `EXPO_PUBLIC_AUTH_URL`. `eas update` does not read that env; pass it on the CLI. See `AGENTS.md`.
 
 Android-only. No iOS / TestFlight path.
 
