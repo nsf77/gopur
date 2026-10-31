@@ -36,6 +36,7 @@ import {
   type UnreadCount,
   type User,
 } from "@gopur/shared";
+import { resolveBaseUrl } from "./resolve-base-url";
 import { sessionToken, useSessionStore } from "../stores/session";
 
 export class ApiError extends Error {
@@ -62,12 +63,7 @@ function parseJsonError(body: string): ErrorBody | null {
 export type ApiClient = ReturnType<typeof hc<AppType>>;
 
 export function apiBase(): string {
-  const configured = process.env.EXPO_PUBLIC_API_URL;
-  if (configured) return configured.replace(/\/$/, "");
-  if (typeof window !== "undefined" && window.location?.origin) {
-    return `${window.location.origin}/api`;
-  }
-  return "https://go.pur.run/api";
+  return resolveBaseUrl().api;
 }
 
 export function createApiClient(token = "", fetchImpl: typeof fetch = fetch): ApiClient {

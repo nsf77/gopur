@@ -20,6 +20,10 @@
       "channel": "preview",
       "runtimeVersion": {
         "policy": "fingerprint"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://go.pur.run/api",
+        "EXPO_PUBLIC_AUTH_URL": "https://go.pur.run"
       }
     }
   }

@@ -7,12 +7,16 @@
     "dev": "bun run paraglide && expo start",
     "android": "bun run paraglide && expo start --android",
     "web": "bun run paraglide && expo start --web",
-    "export:web": "bun run paraglide && expo export --platform web --output-dir dist",
+    "export:web": "bun run paraglide && EXPO_OS=web EXPO_NO_BUNDLE_SPLITTING=1 expo export --platform web --output-dir dist",
+    "build:web": "bun run export:web",
     "typecheck": "bun run paraglide && tsc --noEmit",
-    "build": "bun run export:web"
+    "build": "bun run export:web",
+    "eas-build-post-install": "node ./scripts/eas-build-post-install.cjs",
+    "eas:update:preview": "node ./scripts/eas-update-preview.cjs"
   },
   "dependencies": {
     "@better-auth/expo": "^1.4.0",
+    "@expo/metro-runtime": "~58.0.15",
     "@gopur/shared": "workspace:*",
     "@inlang/paraglide-js": "^2.13.0",
     "@mobily/ts-belt": "^3.13.1",
@@ -25,6 +29,7 @@
     "expo-linking": "~58.0.15",
     "expo-network": "~58.0.4",
     "expo-router": "~58.0.28",
+    "expo-server": "~58.0.6",
     "expo-secure-store": "~58.0.2",
     "expo-sharing": "~58.0.21",
     "expo-status-bar": "~58.0.4",
@@ -51,6 +56,7 @@
   "devDependencies": {
     "@cloudflare/workers-types": "4.20260421.1",
     "@types/react": "^19.2.0",
+    "babel-preset-expo": "~58.0.22",
     "tailwindcss": "^4.1.12",
     "typescript": "^5.9.0"
   }

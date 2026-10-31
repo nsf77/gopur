@@ -3,7 +3,7 @@ import { emailOTPClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
-import { apiBase } from "./api";
+import { resolveBaseUrl } from "./resolve-base-url";
 
 const memory = new Map<string, string>();
 
@@ -32,14 +32,8 @@ const webStorage = {
   },
 };
 
-function originFromApi(): string {
-  const base = apiBase();
-  if (base.endsWith("/api")) return base.slice(0, -4);
-  return base;
-}
-
 export const authClient = createAuthClient({
-  baseURL: originFromApi(),
+  baseURL: resolveBaseUrl().auth,
   basePath: "/api/auth",
   plugins: [
     expoClient({

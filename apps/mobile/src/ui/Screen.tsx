@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from "react-native";
+import { ScreenSafeArea, screenFillStyles } from "./ScreenSafeArea";
 
 export function Screen(props: {
   children: ReactNode;
@@ -8,17 +9,20 @@ export function Screen(props: {
   padded?: boolean;
 }) {
   return (
-    <ScrollView
-      className="flex-1 bg-bg"
-      contentContainerClassName={props.padded === false ? "" : "pb-8"}
-      refreshControl={
-        props.onRefresh ? (
-          <RefreshControl refreshing={Boolean(props.refreshing)} onRefresh={props.onRefresh} />
-        ) : undefined
-      }
-    >
-      {props.children}
-    </ScrollView>
+    <ScreenSafeArea>
+      <ScrollView
+        style={screenFillStyles.fill}
+        className="bg-bg"
+        contentContainerClassName={props.padded === false ? "" : "pb-8"}
+        refreshControl={
+          props.onRefresh ? (
+            <RefreshControl refreshing={Boolean(props.refreshing)} onRefresh={props.onRefresh} />
+          ) : undefined
+        }
+      >
+        {props.children}
+      </ScrollView>
+    </ScreenSafeArea>
   );
 }
 

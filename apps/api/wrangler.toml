@@ -2,7 +2,7 @@ name = "gopur-app"
 main = "src/worker.ts"
 compatibility_date = "2026-10-10"
 compatibility_flags = ["nodejs_compat"]
-account_id = "[REDACTED]"
+account_id = "f13e891dc4bb32f8c1450b76344ad1ca" # pragma: allowlist secret
 upload_source_maps = true
 
 # Daily importer: 00:00 HKT (16:00 UTC). Manual: POST /api/import/run with X-Import-Token.
