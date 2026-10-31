@@ -1,0 +1,13 @@
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css";
+
+@theme {
+  --color-accent: #304385;
+  --color-bg: #ffffff;
+  --color-text: #111111;
+  --color-text-muted: #737373;
+  --color-divider: #e5e5e5;
+  --color-surface: #ffffff;
+  --color-surface-elevated: #f5f5f5;
+}

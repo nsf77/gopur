@@ -1,0 +1,38 @@
+name = "gopur-app"
+main = "src/worker.ts"
+compatibility_date = "2026-10-10"
+compatibility_flags = ["nodejs_compat"]
+account_id = "[REDACTED]"
+upload_source_maps = true
+
+# Daily importer: 00:00 HKT (16:00 UTC). Manual: POST /api/import/run with X-Import-Token.
+[triggers]
+crons = ["0 16 * * *"]
+
+[observability]
+enabled = true
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+run_worker_first = ["/api/*", "/ws", "/api/ws"]
+
+# D1 created in HKG. Keep existing production ids; replace locally if you recreate D1.
+[[d1_databases]]
+binding = "DB"
+database_name = "gopur"
+database_id = "139222d6-55ef-46fd-9e62-41f0b5942559"
+migrations_dir = "migrations"
+
+[[kv_namespaces]]
+binding = "GOPUR_AUTH"
+id = "fd21b33de2704609a40e6b27a9d18325"
+
+[[durable_objects.bindings]]
+name = "CHAT_HUB"
+class_name = "ChatHub"
+
+[[migrations]]
+tag = "v4-chat-hub"
+new_sqlite_classes = ["ChatHub"]
