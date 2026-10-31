@@ -27,6 +27,15 @@
     },
     "runtimeVersion": {
       "policy": "fingerprint"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "d01f2ff4-9140-4956-b21d-bb7dba703ab1"
+      }
+    },
+    "owner": "nsf77s-team",
+    "updates": {
+      "url": "https://u.expo.dev/d01f2ff4-9140-4956-b21d-bb7dba703ab1"
     }
   }
 }
