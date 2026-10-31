@@ -7,6 +7,10 @@ dist
 apps/mobile/src/paraglide
 apps/mobile/.expo
 apps/mobile/dist
+apps/api/public/_expo
+apps/api/public/assets
+apps/api/public/favicon.ico
+apps/api/public/metadata.json
 .dev.vars
 *.local
 .DS_Store

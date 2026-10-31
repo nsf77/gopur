@@ -34,6 +34,7 @@ Bun + Turborepo monorepo. Layout matches Shopur: `apps/api`, `apps/mobile`, `pac
 - UI: NativeWind 5 (RC) + Gluestack-compatible provider. Phosphor (`phosphor-react-native`). Accent `#304385`.
 - Auth: Better Auth Email OTP + `@better-auth/expo` + SecureStore (web falls back to localStorage). Session token is also sent as `Authorization: Bearer` for Hono RPC.
 - Metro: override Expo’s default and set `inlineRequires: false`. Do **not** set `newArchEnabled` in `app.json`.
+- Expo web (optional Worker SPA): `expo.web.output` is **`single`**, PNG favicon, `EXPO_OS=web EXPO_NO_BUNDLE_SPLITTING=1` on `export:web`. `nativewind/babel` is native-only. Bun `linker = "hoisted"` so `expo-server` resolves.
 
 ## Shared (`packages/shared`)
 
