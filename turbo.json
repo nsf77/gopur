@@ -7,7 +7,7 @@
     },
     "build": {
       "dependsOn": ["^typecheck"],
-      "outputs": ["dist/**", "public/**"]
+      "outputs": ["dist/**"]
     },
     "dev": {
       "cache": false,

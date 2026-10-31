@@ -1,14 +1,15 @@
 # Gopur
 
-Bun + Turborepo: Expo app (`apps/mobile`) and Hono API (`apps/api`) on **one Cloudflare Worker**, plus `@gopur/shared`.
+Bun + Turborepo: Expo app (`apps/mobile`) and Hono API (`apps/api`) on **one Cloudflare Worker**, static marketing site (`apps/web`) on **Cloudflare Pages**, plus `@gopur/shared`.
 
 ## Layout
 
 - `apps/api` — Hono 4, ArkType, Better Auth Email OTP, Drizzle + D1, KV `GOPUR_AUTH`, Durable Object `CHAT_HUB`. Worker `gopur-app`.
 - `apps/mobile` — Expo SDK 58, Expo Router, TanStack Query, Hono RPC (`hc<AppType>`), Paraglide `zh-Hant` + `en`, NativeWind 5, Better Auth Expo + SecureStore.
+- `apps/web` — Astro static marketing site (`@gopur/web`), locales `zh-HK` (`/zh-hk`) + `en` (`/en`). Cloudflare Pages project `gopur-web`; hostname later **gopur.pur.run**.
 - `packages/shared` — Valibot schemas and event/profile helpers.
 
-The Worker serves Expo web static files from `apps/api/public` and `/api/*` (plus `/ws`). Domain: **go.pur.run**.
+The Worker is **Hono only** (`/api/*` plus `/ws`). Domain: **go.pur.run**. Marketing site is a **separate Pages deploy** (`gopur-web`) — do not bind the API Worker to Pages, and do not export Expo web onto the Worker.
 
 ## Surfaces
 
@@ -36,6 +37,9 @@ bun run dev:api
 
 # Expo (Metro): http://localhost:8081
 bun run dev:mobile
+
+# Marketing site (Astro): http://localhost:4321
+bun run dev:web
 ```
 
 For a local API, set both (Metro inlines them at bundle time):
@@ -53,7 +57,15 @@ The preview APK defaults to `https://go.pur.run` (see `apps/mobile/eas.json` and
 bun run deploy
 ```
 
-Exports Expo web into `apps/api/public`, then `wrangler deploy` from `apps/api`.
+`wrangler deploy` from `apps/api` (Worker `gopur-app` → **go.pur.run**). Hono only — no Expo SPA assets.
+
+Marketing site (Pages project `gopur-web`; attach **gopur.pur.run** later):
+
+```bash
+bun run build:web
+bun run deploy:web
+# or: bunx wrangler pages deploy dist --project-name gopur-web   (from apps/web)
+```
 
 Secrets (dashboard or `wrangler secret put`): `BETTER_AUTH_SECRET`, `JWT_SECRET`, `IMPORT_TOKEN`, optional `BREVO_API_KEY` / `EMAIL_FROM` / `ADMIN_EMAILS`.
 

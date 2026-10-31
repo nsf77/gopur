@@ -1,0 +1,3 @@
+/zh-HK /zh-hk 301
+/zh-HK/ /zh-hk 301
+/zh-HK/* /zh-hk/:splat 301

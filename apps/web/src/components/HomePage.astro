@@ -1,0 +1,27 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { APP_URL, copy, isLocale, localeProduct } from "../copy";
+
+const locale = isLocale(Astro.currentLocale) ? Astro.currentLocale : "zh-hk";
+const t = copy[locale];
+const productHref = localeProduct(locale);
+---
+
+<Layout>
+  <main>
+    <section class="hero">
+      <h1>{t.headline}</h1>
+      <p class="lede">{t.lede}</p>
+      <div class="actions">
+        <a class="btn btn-primary" href={APP_URL}>{t.openApp}</a>
+        <a class="btn btn-ghost" href={productHref}>{t.navProduct}</a>
+        <span class="muted">{t.androidSoon}</span>
+      </div>
+    </section>
+    <section class="section">
+      <p class="kicker">{t.pitchKicker}</p>
+      <h2>{t.pitchTitle}</h2>
+      <p class="lede">{t.pitchBody}</p>
+    </section>
+  </main>
+</Layout>

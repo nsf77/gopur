@@ -1,0 +1,8 @@
+# Cloudflare Pages project gopur-web. Hostname later: gopur.pur.run
+#   bun run deploy:web
+#   # or: bunx wrangler pages deploy dist --project-name gopur-web
+# Do not bind Worker gopur-app (go.pur.run) to this project.
+
+name = "gopur-web"
+compatibility_date = "2026-10-10"
+pages_build_output_dir = "./dist"

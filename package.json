@@ -8,8 +8,11 @@
     "dev": "turbo dev --filter=api --filter=mobile",
     "dev:api": "turbo dev --filter=api",
     "dev:mobile": "turbo dev --filter=mobile",
-    "build": "turbo build --filter=api",
+    "dev:web": "turbo dev --filter=@gopur/web",
+    "build": "turbo build --filter=api --filter=@gopur/web",
+    "build:web": "turbo build --filter=@gopur/web",
     "deploy": "turbo deploy --filter=api",
+    "deploy:web": "turbo deploy --filter=@gopur/web",
     "test": "turbo test --filter=api --filter=@gopur/shared"
   },
   "devDependencies": {
