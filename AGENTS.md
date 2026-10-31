@@ -34,7 +34,8 @@ Bun + Turborepo monorepo. Layout matches Shopur: `apps/api`, `apps/mobile`, `pac
 - UI: NativeWind 5 (RC) + Gluestack-compatible provider. Phosphor (`phosphor-react-native`). Accent `#304385`.
 - Auth: Better Auth Email OTP + `@better-auth/expo` + SecureStore (web falls back to localStorage). Session token is also sent as `Authorization: Bearer` for Hono RPC.
 - Metro: override Expo’s default and set `inlineRequires: false`. Do **not** set `newArchEnabled` in `app.json`.
-- Expo web (optional Worker SPA): `expo.web.output` is **`single`**, PNG favicon, `EXPO_OS=web EXPO_NO_BUNDLE_SPLITTING=1` on `export:web`. `nativewind/babel` is native-only. Bun `linker = "hoisted"` so `expo-server` resolves.
+- Layout: `ScreenSafeArea` uses `StyleSheet` `flex: 1` (NativeWind `className="flex-1"` on SafeAreaView is unreliable on APKs).
+- Expo web is optional. Do not treat `export:web` as the APK success criterion.
 
 ## Shared (`packages/shared`)
 
@@ -62,16 +63,23 @@ bun run --filter mobile typecheck
 
 ## Android preview APK (EAS)
 
-Do **not** invent `extra.eas.projectId` or commit `EXPO_TOKEN`. Only `eas init` may write the project id into `app.json`.
+Android preview APK **must run**. Web export is optional.
 
-Profiles in `apps/mobile/eas.json`: `development` (dev client APK) and `preview` (internal Android APK, channel `preview`, `runtimeVersion.policy: fingerprint`). Preview `env` pins `EXPO_PUBLIC_API_URL` / `EXPO_PUBLIC_AUTH_URL` to go.pur.run.
+Do **not** invent `extra.eas.projectId` or commit `EXPO_TOKEN`. Do **not** copy Shopur’s EAS project id or Worker URLs. Only the orchestrator/`eas init` may write `extra.eas.projectId` into `app.json`.
+
+Profiles in `apps/mobile/eas.json`: `development` (dev client APK) and `preview` (internal Android APK, channel `preview`, `runtimeVersion.policy: fingerprint`). Preview **build** env (Gopur Worker only):
+
+- `EXPO_PUBLIC_API_URL=https://go.pur.run/api`
+- `EXPO_PUBLIC_AUTH_URL=https://go.pur.run`
+
+`eas-build-post-install` compiles Paraglide into `src/paraglide` and runs `packages/shared` `build` (`tsc --noEmit`). EAS workers do not run the mobile `dev` script.
 
 ### First APK
 
 ```bash
 cd apps/mobile
 bunx eas-cli login          # human; uses Expo account, not a committed token
-bunx eas-cli init           # once; writes extra.eas.projectId
+bunx eas-cli init           # orchestrator; writes extra.eas.projectId
 bunx eas-cli build --platform android --profile preview
 ```
 
@@ -81,27 +89,37 @@ Install the APK from the EAS build page (internal distribution). Package id is `
 
 Fingerprint runtime: JS updates only apply to binaries with the same fingerprint.
 
-`eas.json` `env` is applied on **`eas build`**, not on **`eas update`**. Metro inlines `EXPO_PUBLIC_*` when it bundles, so the update CLI must see them:
+**`eas update` does not read `eas.json` `build.env`.** Metro inlines `EXPO_PUBLIC_*` at bundle time. Use the script (it exports Gopur URLs on the CLI):
 
 ```bash
 cd apps/mobile
+bun run eas:update:preview -- --message "describe the JS change"
+```
+
+Equivalent:
+
+```bash
 EXPO_PUBLIC_API_URL=https://go.pur.run/api \
 EXPO_PUBLIC_AUTH_URL=https://go.pur.run \
 bunx eas-cli update --channel preview --message "describe the JS change"
 ```
 
-Local `.env` (gitignored) is fine for Metro/`expo start`. Copy `apps/mobile/.env.example`.
+Client URLs go through `src/lib/resolve-base-url.ts` (`process.env.EXPO_PUBLIC_API_URL` / `EXPO_PUBLIC_AUTH_URL` as static member access). Local `.env` (gitignored) is fine for Metro/`expo start`. Copy `apps/mobile/.env.example`.
 
 ### Known footguns
 
-- **`inlineRequires: true`** — Expo Metro default. Has crashed preview APKs at launch (require cycles). Keep the override in `metro.config.js` at `false`. Never set it `true`.
-- **`newArchEnabled`** — leave unset in `app.json` until NativeWind / Reanimated / Better Auth Expo are proven on a real APK.
-- **Fabricated `extra.eas.projectId`** — EAS rejects a made-up UUID. Run `eas init`.
-- **`EXPO_PUBLIC_*` not on `eas update`** — APK talks to the wrong host or empty URL. Pass CLI env (above).
-- **Dynamic `process.env[name]`** — Metro will not inline. Always use `process.env.EXPO_PUBLIC_API_URL` / `process.env.EXPO_PUBLIC_AUTH_URL` as static member access.
-- **Fingerprint mismatch** — native-dep / `app.json` / plugin changes need a new `eas build`, not only `eas update`.
-- **`localhost` in a device APK** — the phone cannot reach the developer machine. Preview profile must keep production URLs.
-- Android-only. Do not add iOS credentials, `ios` bundle ids, or TestFlight steps.
+- **`inlineRequires: true`** — Expo Metro default. Has crashed preview APKs at launch. Keep `metro.config.js` at `false`. Never set it `true`.
+- **`newArchEnabled`** — leave unset in `app.json`.
+- **Fabricated `extra.eas.projectId`** — EAS rejects a made-up UUID. `eas init` only. Never copy Shopur’s project id.
+- **`eas.json` env vs `eas update`** — build env is not applied to updates. Use `eas:update:preview`.
+- **Dynamic `process.env[name]`** — Metro will not inline. Use `resolve-base-url.ts`.
+- **`expo-router` `ActivityContents`** — native host view + `React.Activity` has crashed APKs. Metro shims it to return `children` only (no RN `View`).
+- **`expo-glass-effect` / `expo-blur` / FlashList** — pulled or tempting to import; Metro shims them, and `src/lib/lazy-native.ts` lazy-`require`s them. Do not top-level import.
+- **NativeWind SafeArea `flex-1`** — use `ScreenSafeArea` (`StyleSheet` `flex: 1`).
+- **Missing Paraglide / shared on EAS** — without `eas-build-post-install`, the APK bundle cannot resolve `src/paraglide` or workspace TS.
+- **Fingerprint mismatch** — native-dep / `app.json` / plugin changes need a new `eas build`.
+- **`localhost` in a device APK** — preview URLs must stay `https://go.pur.run`.
+- Android-only. Do not add iOS credentials, bundle ids, or TestFlight steps.
 
 ## Secrets (wrangler, never commit)
 

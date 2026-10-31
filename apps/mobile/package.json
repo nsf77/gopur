@@ -10,7 +10,9 @@
     "export:web": "bun run paraglide && EXPO_OS=web EXPO_NO_BUNDLE_SPLITTING=1 expo export --platform web --output-dir dist",
     "build:web": "bun run export:web",
     "typecheck": "bun run paraglide && tsc --noEmit",
-    "build": "bun run export:web"
+    "build": "bun run export:web",
+    "eas-build-post-install": "node ./scripts/eas-build-post-install.cjs",
+    "eas:update:preview": "node ./scripts/eas-update-preview.cjs"
   },
   "dependencies": {
     "@better-auth/expo": "^1.4.0",

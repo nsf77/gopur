@@ -36,6 +36,7 @@ import {
   type UnreadCount,
   type User,
 } from "@gopur/shared";
+import { resolveBaseUrl } from "./resolve-base-url";
 import { sessionToken, useSessionStore } from "../stores/session";
 
 export class ApiError extends Error {
@@ -61,12 +62,8 @@ function parseJsonError(body: string): ErrorBody | null {
 
 export type ApiClient = ReturnType<typeof hc<AppType>>;
 
-// Metro inlines EXPO_PUBLIC_* at bundle time (static member access only).
-// `eas.json` env applies to `eas build`, not `eas update` — pass CLI env for OTA.
-const API_URL = (process.env.EXPO_PUBLIC_API_URL ?? "https://go.pur.run/api").replace(/\/$/, "");
-
 export function apiBase(): string {
-  return API_URL;
+  return resolveBaseUrl().api;
 }
 
 export function createApiClient(token = "", fetchImpl: typeof fetch = fetch): ApiClient {

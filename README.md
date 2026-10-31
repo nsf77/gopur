@@ -59,7 +59,7 @@ Secrets (dashboard or `wrangler secret put`): `BETTER_AUTH_SECRET`, `JWT_SECRET`
 
 ## EAS (Android)
 
-`apps/mobile/eas.json` has `development` and `preview` (Android APK, channel `preview`, fingerprint runtime). Run `eas init` in `apps/mobile` before the first build — do not invent `extra.eas.projectId`. Preview env pins `EXPO_PUBLIC_API_URL` / `EXPO_PUBLIC_AUTH_URL`. `eas update` does not read that env; pass it on the CLI. See `AGENTS.md`.
+`apps/mobile/eas.json` has `development` and `preview` (Android APK, channel `preview`, fingerprint runtime). Run `eas init` in `apps/mobile` before the first build — do not invent `extra.eas.projectId`. Preview env pins Gopur URLs. OTA: `bun run eas:update:preview` from `apps/mobile` (eas.json env is not applied to `eas update`). See `AGENTS.md`.
 
 Android-only. No iOS / TestFlight path.
 
