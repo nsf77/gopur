@@ -6,10 +6,10 @@ Bun + Turborepo: Expo app (`apps/mobile`) and Hono API (`apps/api`) on **one Clo
 
 - `apps/api` — Hono 4, ArkType, Better Auth Email OTP, Drizzle + D1, KV `GOPUR_AUTH`, Durable Object `CHAT_HUB`. Worker `gopur-app`.
 - `apps/mobile` — Expo SDK 58, Expo Router, TanStack Query, Hono RPC (`hc<AppType>`), Paraglide `zh-Hant` + `en`, NativeWind 5, Better Auth Expo + SecureStore.
-- `apps/web` — Astro static marketing site (`@gopur/web`), locales `zh-HK` + `en`. Cloudflare Pages project `gopur-web`, hostname **gopur.pur.run**.
+- `apps/web` — Astro static marketing site (`@gopur/web`), locales `zh-HK` (`/zh-hk`) + `en` (`/en`). Cloudflare Pages project `gopur-web`; hostname later **gopur.pur.run**.
 - `packages/shared` — Valibot schemas and event/profile helpers.
 
-The Worker serves Expo web static files from `apps/api/public` and `/api/*` (plus `/ws`). Domain: **go.pur.run**. Marketing site is a **separate Pages deploy** — do not move Expo or Hono onto Pages.
+The Worker is **Hono only** (`/api/*` plus `/ws`). Domain: **go.pur.run**. Marketing site is a **separate Pages deploy** (`gopur-web`) — do not bind the API Worker to Pages, and do not export Expo web onto the Worker.
 
 ## Surfaces
 
@@ -57,9 +57,9 @@ The preview APK defaults to `https://go.pur.run` (see `apps/mobile/eas.json` and
 bun run deploy
 ```
 
-Exports Expo web into `apps/api/public`, then `wrangler deploy` from `apps/api` (Worker `gopur-app` → **go.pur.run**).
+`wrangler deploy` from `apps/api` (Worker `gopur-app` → **go.pur.run**). Hono only — no Expo SPA assets.
 
-Marketing site (Pages `gopur-web` → **gopur.pur.run**):
+Marketing site (Pages project `gopur-web`; attach **gopur.pur.run** later):
 
 ```bash
 bun run build:web

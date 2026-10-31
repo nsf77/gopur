@@ -25,7 +25,6 @@ export default {
     const url = new URL(request.url);
     if (isChatUpgrade(url.pathname)) return handleChatUpgrade(request, env);
     if (isApi(url.pathname)) return hono.fetch(request, env, ctx);
-    if (env.ASSETS) return env.ASSETS.fetch(request);
     return new Response("Gopur API", { status: 200, headers: { "content-type": "text/plain" } });
   },
   scheduled(_controller, env, ctx) {

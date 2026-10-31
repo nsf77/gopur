@@ -1,9 +1,7 @@
-# Cloudflare Pages project. Custom domain target: gopur.pur.run
-# First deploy creates the project if needed:
-#   bun run --filter @gopur/web build
-#   bunx wrangler pages deploy dist --project-name gopur-web
-# Then attach hostname gopur.pur.run in the Pages dashboard.
-# Do not point go.pur.run here — that hostname stays on Worker gopur-app.
+# Cloudflare Pages project gopur-web. Hostname later: gopur.pur.run
+#   bun run deploy:web
+#   # or: bunx wrangler pages deploy dist --project-name gopur-web
+# Do not bind Worker gopur-app (go.pur.run) to this project.
 
 name = "gopur-web"
 compatibility_date = "2026-10-10"

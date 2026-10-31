@@ -8,7 +8,7 @@ interface Props {
 }
 
 const { title: pageTitle, description } = Astro.props;
-const locale = isLocale(Astro.currentLocale) ? Astro.currentLocale : "zh-HK";
+const locale = isLocale(Astro.currentLocale) ? Astro.currentLocale : "zh-hk";
 const t = copy[locale];
 const homeHref = localeHome(locale);
 const productHref = localeProduct(locale);

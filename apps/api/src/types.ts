@@ -1,10 +1,9 @@
-import type { D1Database, DurableObjectNamespace, Fetcher, KVNamespace } from "@cloudflare/workers-types";
+import type { D1Database, DurableObjectNamespace, KVNamespace } from "@cloudflare/workers-types";
 
 export type Bindings = {
   DB: D1Database;
   GOPUR_AUTH: KVNamespace;
   CHAT_HUB: DurableObjectNamespace;
-  ASSETS?: Fetcher;
   CHAT_RELAY_TTL_SECONDS?: string;
   BETTER_AUTH_SECRET?: string;
   BETTER_AUTH_URL?: string;

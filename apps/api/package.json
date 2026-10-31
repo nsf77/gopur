@@ -16,11 +16,10 @@
   },
   "scripts": {
     "dev": "wrangler dev",
-    "build:web": "bun run --cwd ../mobile export:web && rm -rf public && mkdir -p public && cp -r ../mobile/dist/. public/",
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "deploy": "bun run build:web && wrangler deploy",
+    "deploy": "wrangler deploy",
     "cf-typegen": "wrangler types"
   },
   "dependencies": {

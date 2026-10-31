@@ -28,7 +28,7 @@ Bun + Turborepo monorepo. Layout matches Shopur: `apps/api`, `apps/mobile`, `app
 
 ## Mobile (`apps/mobile`)
 
-- **Expo SDK 58** + Expo Router. **Android preview APK is the success criterion.** No iOS / TestFlight / Apple Developer path. Expo web export is optional.
+- **Expo SDK 58** + Expo Router. **Android preview APK is the success criterion.** No iOS / TestFlight / Apple Developer path. No Expo web export.
 - TanStack Query + `hc<AppType>` Hono RPC. Native (and preview APK) uses static `process.env.EXPO_PUBLIC_API_URL` (default `https://go.pur.run/api`). Auth client uses `EXPO_PUBLIC_AUTH_URL` (default `https://go.pur.run`).
 - Client payload parsing: **Valibot** in `@gopur/shared`. Do not depend on `arktype` in the app.
 - i18n: Paraglide JS, locales `zh-Hant` (base) and `en`.
@@ -36,29 +36,25 @@ Bun + Turborepo monorepo. Layout matches Shopur: `apps/api`, `apps/mobile`, `app
 - Auth: Better Auth Email OTP + `@better-auth/expo` + SecureStore (web falls back to localStorage). Session token is also sent as `Authorization: Bearer` for Hono RPC.
 - Metro: override Expo’s default and set `inlineRequires: false`. Do **not** set `newArchEnabled` in `app.json`.
 - Layout: `ScreenSafeArea` uses `StyleSheet` `flex: 1` (NativeWind `className="flex-1"` on SafeAreaView is unreliable on APKs).
-- Expo web is optional. Do not treat `export:web` as the APK success criterion.
 
 ## Web (`apps/web`)
 
-- **Astro static** marketing site (`@gopur/web`). Locales `zh-HK` (default, `/zh-HK/`) and `en` (`/en/`).
+- **Astro static** marketing site (`@gopur/web`). Locales `zh-HK` (html `lang`; URL `/zh-hk`) and `en` (`/en`). `/` redirects to `/zh-hk`.
 - Landing + short product pitch only. Links to the app at `https://go.pur.run`. Play/APK later. No auth, no Hono RPC, no Expo code in this package.
 - Brand: accent `#304385`. Wordmark is **GO** (Lobster) + **pur**.
 - Output is static `dist/`. **Do not** put Expo or the Hono Worker on Pages.
 
-### Cloudflare Pages (`gopur.pur.run`)
+### Cloudflare Pages (`gopur-web`)
 
-Separate from Worker `gopur-app` at **go.pur.run**.
+Separate from Worker `gopur-app` at **go.pur.run**. Do not bind the API Worker to this project.
 
-Suggested Pages project name: `gopur-web`. Config: `apps/web/wrangler.toml` (`pages_build_output_dir = "./dist"`). No account secrets in git.
+Suggested Pages project name: `gopur-web`. Config: `apps/web/wrangler.toml` (`pages_build_output_dir = "./dist"`). No account secrets in git. Hostname **gopur.pur.run** later.
 
 ```bash
 bun run build:web
-# from repo root, or:
-cd apps/web && bunx wrangler pages deploy dist --project-name gopur-web
-# equivalent: bun run deploy:web
+bun run deploy:web
+# or from apps/web: bunx wrangler pages deploy dist --project-name gopur-web
 ```
-
-Attach custom hostname **gopur.pur.run** in the Pages dashboard after the first deploy. Point **go.pur.run** at Worker `gopur-app` only.
 
 ## Shared (`packages/shared`)
 
@@ -73,8 +69,8 @@ bun run typecheck
 bun run test          # api + shared Vitest
 bun run dev           # wrangler + expo (not the marketing site)
 bun run build         # typecheck api + build @gopur/web
-bun run deploy        # expo export --platform web → apps/api/public, then wrangler deploy (go.pur.run)
-bun run dev:web / build:web / deploy:web   # Astro Pages site (gopur.pur.run)
+bun run deploy        # wrangler deploy Hono Worker gopur-app (go.pur.run)
+bun run dev:web / build:web / deploy:web   # Astro Pages site gopur-web (gopur.pur.run later)
 ```
 
 Mobile:
@@ -87,7 +83,7 @@ bun run --filter mobile typecheck
 
 ## Android preview APK (EAS)
 
-Android preview APK **must run**. Web export is optional.
+Android preview APK **must run**. Do not add Expo web export.
 
 Do **not** invent `extra.eas.projectId` or commit `EXPO_TOKEN`. Do **not** copy Shopur’s EAS project id or Worker URLs. Only the orchestrator/`eas init` may write `extra.eas.projectId` into `app.json`.
 
@@ -163,6 +159,6 @@ Worker name remains `gopur-app`. Point **go.pur.run** at this Worker.
 
 ## Checks
 
-- Typecheck and build (`bun run typecheck`, `bun run deploy` / `build`).
+- Typecheck and build (`bun run typecheck`, `bun run build`). Worker deploy is Hono only (`bun run deploy`).
 - Vitest only for api + shared.
 - No GitHub Actions unless a later stage asks.

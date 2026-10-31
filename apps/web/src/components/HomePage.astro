@@ -2,7 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import { APP_URL, copy, isLocale, localeProduct } from "../copy";
 
-const locale = isLocale(Astro.currentLocale) ? Astro.currentLocale : "zh-HK";
+const locale = isLocale(Astro.currentLocale) ? Astro.currentLocale : "zh-hk";
 const t = copy[locale];
 const productHref = localeProduct(locale);
 ---

@@ -3,10 +3,10 @@ import { defineConfig } from "astro/config";
 export default defineConfig({
   site: "https://gopur.pur.run",
   output: "static",
-  trailingSlash: "always",
+  trailingSlash: "never",
   i18n: {
-    defaultLocale: "zh-HK",
-    locales: ["zh-HK", "en"],
+    defaultLocale: "zh-hk",
+    locales: ["zh-hk", "en"],
     routing: {
       prefixDefaultLocale: true,
       redirectToDefaultLocale: true,
