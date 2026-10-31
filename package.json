@@ -2,16 +2,18 @@
   "name": "gopur",
   "private": true,
   "packageManager": "bun@1.4.3",
-  "workspaces": [
-    "app",
-    "api"
-  ],
+  "workspaces": ["apps/*", "packages/*"],
   "scripts": {
-    "typecheck": "bun run --filter '*' typecheck",
-    "build": "bun run --filter app build",
-    "dev": "bun run --filter app dev",
-    "dev:app": "bun run --filter app dev",
-    "deploy": "bun run --filter app deploy",
-    "preview": "bun run --filter app preview"
+    "typecheck": "turbo typecheck",
+    "dev": "turbo dev --filter=api --filter=mobile",
+    "dev:api": "turbo dev --filter=api",
+    "dev:mobile": "turbo dev --filter=mobile",
+    "build": "turbo build --filter=api",
+    "deploy": "turbo deploy --filter=api",
+    "test": "turbo test --filter=api --filter=@gopur/shared"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.0",
+    "typescript": "^5.9.0"
   }
 }

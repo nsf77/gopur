@@ -1,12 +1,16 @@
 node_modules
 dist
 .wrangler
+.turbo
 .tanstack
 .output
-app/src/paraglide
+apps/mobile/src/paraglide
+apps/mobile/.expo
+apps/mobile/dist
 .dev.vars
 *.local
 .DS_Store
 .env
 .env.*
 !.env.example
+*.tsbuildinfo
